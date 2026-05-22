@@ -1,4 +1,7 @@
 # Logs
+node_modules/
+/.pnp
+.pnp.js
 logs
 *.log
 npm-debug.log*
@@ -9,12 +12,14 @@ lerna-debug.log*
 
 node_modules
 dist
+build
 dist-ssr
 *.local
 
 # Editor directories and files
-.vscode/*
+.vscode/
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
 .DS_Store
 *.suo
@@ -22,3 +27,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Arquivos locais / Variáveis de ambiente secretas
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
