@@ -9,7 +9,7 @@ export default function Navbar() {
         
         <NavLink
           to="/Dashboard"
-          className="text-sm text-white font-normal relative pb-2 hover:border-b-2 border-white"
+          className="text-sm text-white font-normal relative pb-2 hover:border-b-2 border-white active:border-b-2 active:font-bold"
         >
           Dashboard
         </NavLink>
