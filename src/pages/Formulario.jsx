@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Pergunta from '../components/questão/Pergunta';
+import Footer from '../components/footer/Footer';
 
 import { ajustarAltura } from '../utils/dados';
 
@@ -43,12 +44,9 @@ export default function Formulario() {
         <div className="w-full max-w-4xl mx-auto px-3 md:px-4 lg:px-8 pb-6 md:pb-12 flex-grow flex flex-col">
           {/* folha (forms) */}
           <div className="w-full bg-gray-100 rounded-lg md:rounded-xl shadow-lg border border-slate-200/60 min-h-[400px] md:min-h-[500px] mt-3 md:mt-5 relative z-10 flex flex-col">
-            
             {/* Conteúdo de dentro do Formulário */}
             <div className="p-4 md:p-6 lg:p-8 flex flex-col gap-4 md:gap-6 overflow-y-auto">
-              
               <div className="flex flex-col gap-3">
-                
                 {/* Título Principal Auto-Expansível */}
                 {/* Alterado para items-start para manter o lápis alinhado no topo quando quebrar linha */}
                 <div className="flex items-start justify-between gap-4 border-b border-transparent hover:border-slate-200/60 focus-within:border-indigo-500 transition-colors group">
@@ -58,7 +56,10 @@ export default function Formulario() {
                     className="flex-grow bg-transparent placeholder:text-black text-black font-semibold text-3xl md:text-4xl py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[44px] md:min-h-[52px]"
                     placeholder="Formulário"
                   />
-                  <button type="button" className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-2 md:mt-3">
+                  <button
+                    type="button"
+                    className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-2 md:mt-3"
+                  >
                     <Pencil className="w-4 h-4 md:size-5" />
                   </button>
                 </div>
@@ -71,19 +72,22 @@ export default function Formulario() {
                     className="flex-grow bg-transparent placeholder:text-slate-500 text-slate-600 font-normal text-sm md:text-base py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px] md:min-h-[32px]"
                     placeholder="Descrição"
                   />
-                  <button type="button" className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-1.5">
+                  <button
+                    type="button"
+                    className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-1.5"
+                  >
                     <Pencil className="w-3 h-3 md:size-4" />
                   </button>
                 </div>
-
               </div>
 
               <hr className="border-slate-200/40" />
-              <Pergunta/>
+              <Pergunta />
             </div>
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 }
