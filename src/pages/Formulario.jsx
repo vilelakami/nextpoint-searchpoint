@@ -5,13 +5,14 @@ import Pergunta from '../components/questão/Pergunta';
 import Footer from '../components/footer/Footer';
 
 import { ajustarAltura } from '../utils/dados';
+import ConfiguracaoPergunta from '../components/informações/ConfiguracaoPergunta';
 
 export default function Formulario() {
   const navigate = useNavigate();
 
   return (
     <div className="flex flex-col w-full mx-auto h-screen font-montserrat">
-      <div className="w-full flex flex-col h-auto min-h-[28vh] lg:h-[33vh] bg-indigo-500">
+      <div className="relative w-full flex flex-col h-auto min-h-[28vh] lg:h-[33vh] bg-indigo-500">
         {/* cabeçalho */}
         <div className="w-full flex items-center justify-between h-auto min-h-[50px] lg:h-[62px] bg-indigo-700 p-3 md:p-4 gap-2 md:gap-4">
           <button
@@ -39,6 +40,7 @@ export default function Formulario() {
             </button>
           </div>
         </div>
+          <ConfiguracaoPergunta/>
 
         {/* formulário */}
         <div className="w-full max-w-4xl mx-auto px-3 md:px-4 lg:px-8 pb-6 md:pb-12 flex-grow flex flex-col">
