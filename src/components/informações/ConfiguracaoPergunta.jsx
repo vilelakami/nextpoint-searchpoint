@@ -2,22 +2,28 @@ import React from 'react';
 
 export default function ConfiguracaoPergunta() {
   return (
-    <div className="absolute top-15 right-10 w-fit flex flex-col bg-white rounded-lg p-4 gap-2">
-      <p className="text-slate-500 text-xs font-medium">CONFIGURAÇÕES</p>
-      <div>
-        <label className="flex items-center justify-between cursor-pointer text-xs font-medium">
-          Obrigatória
-          <input type="checkbox" value="" className="sr-only peer" />
-          <div class="relative w-9 h-5 bg-slate-500 peer-focus:outline-none peer-focus:ring-0 peer-focus:ring-brand-soft dark:peer-focus:ring-brand-soft rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-buffer after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-700"></div>
+    <div className="absolute top-12 md:top-14 lg:top-16 right-3 md:right-4 lg:right-6 w-64 flex flex-col bg-white rounded-xl p-4 md:p-5 gap-3 shadow-xl border border-slate-200/60 z-50">
+      
+      <p className="text-slate-400 text-[10px] md:text-xs font-bold tracking-wider uppercase">
+        Configurações
+      </p>
+      
+      <div className="flex flex-col gap-3.5">
+        {/* Opção: Obrigatória */}
+        <label className="flex items-center justify-between cursor-pointer text-sm font-medium text-slate-700 select-none group">
+          <span className="group-hover:text-slate-900 transition-colors">Obrigatória</span>
+          <input type="checkbox" className="sr-only peer" />
+          <div className="relative w-10 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 transition-colors"></div>
+        </label>
+
+        {/* Opção: Ordem Aleatória */}
+        <label className="flex items-center justify-between cursor-pointer text-sm font-medium text-slate-700 select-none group">
+          <span className="group-hover:text-slate-900 transition-colors">Ordem Aleatória</span>
+          <input type="checkbox" className="sr-only peer" />
+          <div className="relative w-10 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 transition-colors"></div>
         </label>
       </div>
-      <div>
-        <label className="flex items-center justify-between gap-8 cursor-pointer text-xs font-medium">
-          Ordem Aleatória
-          <input type="checkbox" value="" className="sr-only peer" />
-          <div class="relative w-9 h-5 bg-slate-500 peer-focus:outline-none peer-focus:ring-0 peer-focus:ring-brand-soft dark:peer-focus:ring-brand-soft rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-buffer after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-700"></div>
-        </label>
-      </div>
+
     </div>
   );
 }

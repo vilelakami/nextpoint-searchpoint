@@ -40,7 +40,7 @@ export default function Formulario() {
             </button>
           </div>
         </div>
-          <ConfiguracaoPergunta/>
+        <ConfiguracaoPergunta />
 
         {/* formulário */}
         <div className="w-full max-w-4xl mx-auto px-3 md:px-4 lg:px-8 pb-6 md:pb-12 flex-grow flex flex-col">
@@ -78,7 +78,7 @@ export default function Formulario() {
                     type="button"
                     className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-1.5"
                   >
-                    <Pencil className="w-3 h-3 md:size-4" />
+                    <Pencil className="w-3 h-3 md:size-4 lg:size-5" />
                   </button>
                 </div>
               </div>
@@ -89,7 +89,7 @@ export default function Formulario() {
           </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

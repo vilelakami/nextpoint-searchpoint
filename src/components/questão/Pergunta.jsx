@@ -8,13 +8,10 @@ export default function Pergunta() {
 
   return (
     <div className="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm font-montserrat">
-      
       {/* Linha do Topo: Inputs na esquerda, Ações na direita */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-        
         {/* BLOCO DA ESQUERDA: Título e Descrição */}
         <div className="flex flex-col gap-2 flex-grow max-w-2xl w-full">
-          
           {/* Textarea de Título auto-expansível */}
           <div className="flex items-start gap-2 group border-b border-transparent hover:border-slate-100 focus-within:border-indigo-500 transition-colors">
             <textarea
@@ -36,7 +33,6 @@ export default function Pergunta() {
             />
             <Pencil className="size-4 text-slate-400 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity mt-1.5" />
           </div>
-
         </div>
 
         {/* BLOCO DA DIREITA: Ícone de imagem e Select */}
@@ -44,7 +40,7 @@ export default function Pergunta() {
           <button className="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-50 transition-colors">
             <ImageDown className="size-5" />
           </button>
-          
+
           <div className="flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-xl border border-transparent focus-within:border-slate-300 transition-all">
             <CircleDot className="size-4 text-slate-600" />
             <select
@@ -58,37 +54,34 @@ export default function Pergunta() {
             </select>
           </div>
         </div>
-
       </div>
 
       {/* Condicional: Conteúdo da Múltipla Escolha */}
       {tipoPergunta === 'multipla_escolha' && (
         <div className="flex flex-col gap-3 mt-2 pl-1 animate-in fade-in duration-150">
-          
           {/* Opção 1 auto-expansível */}
           <div className="flex items-start gap-3 group max-w-md w-full">
-            <input 
-              type="radio" 
-              disabled 
+            <input
+              type="radio"
+              disabled
               className="accent-[#4F46E5] size-4 cursor-not-allowed mt-2"
             />
-            <textarea 
+            <textarea
               rows={1}
               onInput={ajustarAltura} // Faz a alternativa crescer também se o texto for gigante!
-              className="flex-grow bg-transparent border-b border-transparent hover:border-slate-200 focus:border-[#4F46E5] text-slate-800 font-normal text-sm py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px]" 
+              className="flex-grow bg-transparent border-b border-transparent hover:border-slate-200 focus:border-[#4F46E5] text-slate-800 font-normal text-sm py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px]"
               placeholder="Opção 1"
             />
           </div>
 
           {/* Botão Adicionar Opção */}
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="max-w-fit flex items-center gap-2 text-slate-500 hover:text-[#4F46E5] font-medium text-sm py-1 transition-colors group"
           >
-            <Plus className="size-4 text-slate-400 group-hover:text-[#4F46E5] transition-colors" />
+            <Plus className="size-4 md:size-5 text-slate-400 group-hover:text-[#4F46E5] transition-colors" />
             <span>Adicionar opção</span>
           </button>
-
         </div>
       )}
 
@@ -103,7 +96,6 @@ export default function Pergunta() {
           />
         </div>
       )}
-
     </div>
   );
 }
