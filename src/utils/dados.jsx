@@ -10,3 +10,10 @@ export const statusStyles = {
   rascunho: 'bg-slate-100 text-slate-600',
   concluida: 'bg-orange-50 text-orange-700',
 };
+
+// Função mágica que faz o textarea crescer sozinho
+export const ajustarAltura = (e) => {
+  const elemento = e.target;
+  elemento.style.height = 'auto'; // Reseta a altura para recalcular
+  elemento.style.height = `${elemento.scrollHeight}px`; // Define a nova altura baseada no conteúdo
+};
