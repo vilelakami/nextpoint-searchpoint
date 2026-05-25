@@ -1,5 +1,5 @@
 import React from 'react';
-import { CirclePlus, Image } from 'lucide-react';
+import { CirclePlus, Image, RemoveFormatting } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -13,6 +13,16 @@ export default function Footer() {
         <CirclePlus className="size-4 md:size-5" />
         <span className="hidden sm:inline">Pergunta</span>
         <span className="sm:hidden text-sm font-bold">Pergunta</span> 
+      </button>
+
+      {/* Botão titulo */}
+      <button
+        type="button"
+        className="flex flex-1 sm:flex-none items-center justify-center sm:justify-start gap-2 text-white font-medium text-xs md:text-sm border-r border-slate-700 pr-3 md:pr-4 lg:pr-5 hover:text-slate-300 transition-colors"
+      >
+        <RemoveFormatting className="size-4 md:size-5" />
+        <span className="hidden sm:inline">Título</span>
+        <span className="sm:hidden text-sm font-bold">Título</span> 
       </button>
 
       {/* Botão Mídia */}
