@@ -1,0 +1,80 @@
+import React from 'react';
+
+export default function DadosPessoais() {
+  return (
+    <div>
+      <div class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-lg border border-slate-200">
+        <table class="w-full text-sm text-center rtl:text-right text-body">
+          <thead class="text-sm text-body bg-neutral-secondary-soft">
+            <tr>
+              <th scope="col" class="px-6 py-3 font-medium">
+                Nome
+              </th>
+              <th scope="col" class="px-6 py-3 font-medium">
+                Idade
+              </th>
+              <th scope="col" class="px-6 py-3 font-medium">
+                Sexo
+              </th>
+              <th scope="col" class="px-6 py-3 font-medium">
+                Escolaridade
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="bg-white">
+              {/* Campo Nome */}
+              <td className="px-6 py-4">
+                <input 
+                  type="text" 
+                  name="nome"
+                  placeholder="Ex: Regis Nogueira" 
+                  className="w-full bg-transparent border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue-500"
+                />
+              </td>
+
+              {/* Campo Idade */}
+              <td className="px-6 py-4">
+                <input 
+                  type="number" 
+                  name="idade"
+                  placeholder="21" 
+                  className="w-full bg-transparent border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue-500"
+                />
+              </td>
+
+              {/* Campo Sexo */}
+              <td className="px-6 py-4">
+                <select 
+                  name="sexo"
+                  className="w-full bg-transparent border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue-500"
+                >
+                  <option value="">Selecione...</option>
+                  <option value="masculino">Masculino</option>
+                  <option value="feminino">Feminino</option>
+                  <option value="outro">Outro</option>
+                </select>
+              </td>
+
+              {/* Campo Escolaridade */}
+              <td className="px-6 py-4">
+                <select 
+                  name="escolaridade"
+                  className="w-full bg-transparent border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue-500"
+                >
+                  <option value="">Selecione...</option>
+                  <option value="fundamental_completo">Ensino Fundamental Completo</option>
+                  <option value="fundamental_incompleto">Ensino Fundamental Incompleto</option>
+                  <option value="medio_completo">Ensino Médio Completo</option>
+                  <option value="medio_incompleto">Ensino Médio Incompleto</option>
+                  <option value="superior_completo">Ensino Superior Completo</option>
+                  <option value="superior_incompleto">Ensino Superior Incompleto</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

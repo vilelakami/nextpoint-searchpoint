@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ImageDown, CircleDot, Pencil, Plus } from 'lucide-react';
+import { ImageDown, CircleDot, Pencil, Plus, Trash } from 'lucide-react';
 
 import { ajustarAltura } from '../../utils/dados';
 
@@ -53,6 +53,18 @@ export default function Pergunta() {
               <option value="texto">Texto</option>
             </select>
           </div>
+          <div>
+            <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700 select-none group">
+              <span className="group-hover:text-slate-900 transition-colors">
+                Ordem Aleatória
+              </span>
+              <input type="checkbox" className="sr-only peer" />
+              <div className="relative w-10 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 transition-colors"></div>
+            </label>
+          </div>
+          <div>
+            <Trash className="size-4 hover:text-red-600" />
+          </div>
         </div>
       </div>
 
@@ -68,7 +80,7 @@ export default function Pergunta() {
             />
             <textarea
               rows={1}
-              onInput={ajustarAltura} // Faz a alternativa crescer também se o texto for gigante!
+              onInput={ajustarAltura}
               className="flex-grow bg-transparent border-b border-transparent hover:border-slate-200 focus:border-[#4F46E5] text-slate-800 font-normal text-sm py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px]"
               placeholder="Opção 1"
             />

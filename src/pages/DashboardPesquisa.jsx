@@ -19,7 +19,7 @@ export default function DashboardPesquisa() {
           <div className='flex items-center ml-2 md:ml-4 gap-2'>
           <img src={logotipo} alt="logotipo da NextPoint" />
           <h2 className="text-white text-sm md:text-base lg:text-lg font-bold truncate">
-            SearchPoint
+            ResearchPoint
           </h2>
           </div>
           <Nav />

@@ -2,6 +2,7 @@ export const status = [
   { value: 'todas', label: 'Todas' },
   { value: 'ativa', label: 'Ativa' },
   { value: 'rascunho', label: 'Rascunho' },
+  { value: 'em_pausa', label: 'Em Pausa' },
   { value: 'concluida', label: 'Concluída' },
 ];
 

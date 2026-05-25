@@ -3,6 +3,7 @@ import { ArrowLeft, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Pergunta from '../components/questão/Pergunta';
 import Footer from '../components/footer/Footer';
+import DadosPessoais from '../components/dados-pessoais/DadosPessoais';
 
 import { ajustarAltura } from '../utils/dados';
 import ConfiguracaoPergunta from '../components/informações/ConfiguracaoPergunta';
@@ -83,7 +84,23 @@ export default function Formulario() {
                 </div>
               </div>
 
+              {/* id da pesquisa */}
+              <div className="flex items-center border-b border-transparent hover:border-slate-200/60 focus-within:border-indigo-500 transition-colors group w-fit">
+                <textarea
+                  rows={1}
+                  onInput={ajustarAltura}
+                  className="w-40 bg-transparent placeholder:text-slate-500 text-slate-600 font-normal text-sm md:text-base py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px] md:min-h-[32px]"
+                  placeholder="nº de registro"
+                />
+                <button
+                  type="button"
+                  className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-1"
+                >
+                  <Pencil className="w-2 h-2 md:size-3 lg:size-4" />
+                </button>
+              </div>
               <hr className="border-slate-200/40" />
+              <DadosPessoais/>
               <Pergunta />
             </div>
           </div>
