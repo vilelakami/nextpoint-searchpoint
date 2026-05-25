@@ -4,6 +4,7 @@ import { Settings, Plus } from 'lucide-react';
 import Status from '../components/status/Status';
 import SearchBar from '../components/searchbar/SearchBar';
 import CardForm from '../components/cards-forms/CardsForms';
+import logotipo from '../assets/icons/logotipo.svg';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 export default function DashboardPesquisa() {
@@ -15,9 +16,12 @@ export default function DashboardPesquisa() {
       <div className="w-full flex flex-col h-auto min-h-[30vh] lg:h-1/3 bg-indigo-500">
         {/* logo e nav */}
         <div className="w-full flex items-center justify-between h-auto min-h-[50px] lg:h-[62px] bg-indigo-700 p-3 md:p-4 gap-2 md:gap-4">
-          <h2 className="text-white text-sm md:text-base lg:text-lg font-bold ml-2 md:ml-4 truncate">
+          <div className='flex items-center ml-2 md:ml-4 gap-2'>
+          <img src={logotipo} alt="logotipo da NextPoint" />
+          <h2 className="text-white text-sm md:text-base lg:text-lg font-bold truncate">
             SearchPoint
           </h2>
+          </div>
           <Nav />
           <div className="flex">
             <Settings className="w-4 h-4 md:size-5 text-white mr-2 md:mr-4 shrink-0" />
