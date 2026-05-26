@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 
 import { statusStyles, status } from '../../utils/dados';
+import { useNavigate } from 'react-router-dom';
 
 const PALETA_CORES = [
   'bg-pink-400',
@@ -20,6 +21,7 @@ const PALETA_CORES = [
 ];
 
 export default function CardForm({ pesquisa, onClick, onExcluir }) {
+  const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
   const [coordenadas, setCoordenadas] = useState({ top: 0, left: 0 }); // Guarda a posição do clique
   const buttonRef = useRef(null);
@@ -133,7 +135,7 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
               onClick={(e) => {
                 e.stopPropagation();
                 setMenuAberto(false);
-                alert(`Iniciando pesquisa: ${pesquisa.titulo}`);
+                navigate(`/responder/${pesquisa.id_pesquisa}`);
               }}
               className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left font-medium"
             >

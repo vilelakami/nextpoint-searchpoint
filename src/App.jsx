@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/DashboardPesquisa';
 import Formulario from './pages/Formulario';
+import ResponderFormulario from './pages/ResponderPesquisa';
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
             <Route path="/Dashboard" element={<Dashboard />} />
             <Route path="/Formulario" element={<Formulario />} />
             <Route path="/formulario/:id" element={<Formulario />} />
+            <Route path="/responder/:id" element={<ResponderFormulario />} />
           </Routes>
         </main>
         <footer className="flex fixed bottom-1 left-1/2 text-sm left-1/2 -translate-x-1/2 shadow-xl">
