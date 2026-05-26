@@ -37,16 +37,18 @@ export default function Formulario() {
   const { id } = useParams(); //id que veio pela url
 
   useEffect(() => {
-    if(id) {
-      const pesquisasSalvas = JSON.parse(localStorage.getItem('pesquisas')) || [];
-      const pesquisaEncontrada = pesquisasSalvas.find(p => p.id_pesquisa === id);
+    if (id) {
+      const pesquisasSalvas =
+        JSON.parse(localStorage.getItem('pesquisas')) || [];
+      const pesquisaEncontrada = pesquisasSalvas.find(
+        (p) => p.id_pesquisa === id,
+      );
 
-      if(pesquisaEncontrada){
+      if (pesquisaEncontrada) {
         setDadosFormulario(pesquisaEncontrada);
       }
     }
   }, [id]);
-
 
   // função pra salvar os inputs no array dadosFormulario
   const handleInputChange = (e) => {
@@ -194,7 +196,7 @@ export default function Formulario() {
                   rows={1}
                   onInput={ajustarAltura}
                   className="w-40 bg-transparent placeholder:text-slate-500 text-slate-600 font-normal text-sm md:text-base py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px] md:min-h-[32px]"
-                  placeholder="nº de registro"
+                  placeholder="Nº de Registro"
                 />
                 <button
                   type="button"
@@ -207,7 +209,7 @@ export default function Formulario() {
               <DadosPessoais />
               {dadosFormulario.perguntas.map((pergunta, index) => (
                 <Pergunta
-                  key={pergunta.id || index} 
+                  key={pergunta.id || index}
                   dados={pergunta}
                   atualizarPergunta={atualizarPergunta}
                   adicionarOpcao={onAdicionarOpcao}

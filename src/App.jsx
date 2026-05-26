@@ -17,7 +17,7 @@ export default function App() {
             <Route path="/responder/:id" element={<ResponderFormulario />} />
           </Routes>
         </main>
-        <footer className="flex fixed bottom-1 left-1/2 text-sm left-1/2 -translate-x-1/2 shadow-xl">
+        <footer className="flex fixed bottom-1 text-sm right-5 text-indigo-950 font-medium shadow-xl">
           Powered By NextPoint
         </footer>
       </div>

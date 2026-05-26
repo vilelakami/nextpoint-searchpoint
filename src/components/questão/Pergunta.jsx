@@ -80,7 +80,7 @@ export default function Pergunta({ dados, atualizarPergunta, adicionarOpcao }) {
           <div>
             <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700 select-none group">
               <span className="group-hover:text-slate-900 transition-colors">
-                Ordem Aleatória
+                Obrigatória
               </span>
               <input
                 type="checkbox"

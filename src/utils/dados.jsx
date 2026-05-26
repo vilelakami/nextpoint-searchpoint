@@ -1,5 +1,6 @@
 export const status = [
   { value: 'todas', label: 'Todas' },
+  { value: 'em_andamento', label: 'Em Andamento' },
   { value: 'rascunho', label: 'Rascunho' },
   { value: 'em_pausa', label: 'Em Pausa' },
   { value: 'concluida', label: 'Concluída' },
@@ -9,6 +10,7 @@ export const statusStyles = {
   concluida: 'bg-red-100 text-red-700',
   rascunho: 'bg-slate-100 text-slate-600',
   em_pausa: 'bg-yellow-50 text-yellow-700',
+  em_andamento: 'bg-yellow-150 text-yellow-950',
 };
 
 // Função mágica que faz o textarea crescer sozinho

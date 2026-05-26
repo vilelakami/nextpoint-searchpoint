@@ -80,15 +80,6 @@ export default function ResponderFormulario() {
             Cancelar
           </button>
 
-          {/* botão 'pausar' que altera os status para 'em_pausa' */}
-          <button
-            onClick={() => salvarProgressoPesquisa('em_pausa', 'Pesquisa pausada! Você pode continuar mais tarde.')}
-            type="button"
-            className="bg-white text-indigo-700 hover:bg-gray-200 font-medium text-xs md:text-sm py-1 px-3 md:px-6 rounded"
-          >
-            Pausar
-          </button>
-
           {/* 🏁 botão 'finalizar' que altera os status para 'concluida' */}
           <button
             onClick={() => salvarProgressoPesquisa('concluida', 'Pesquisa finalizada com sucesso!')}

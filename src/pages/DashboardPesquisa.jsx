@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 // importação dos ícones
 import { Settings, Plus } from 'lucide-react';
 import logotipo from '../assets/icons/logotipo.svg';
@@ -19,6 +19,30 @@ export default function DashboardPesquisa() {
     setBancolocal(pesquisasSalvas);
   }, []);
 
+  // função pra mudar status
+  const handleAlternarPausa = (idPesquisa, statusAtual) => {
+    // se ta em_pausa volta para rascunho, senão vira em_pausa
+    const novoStatus = statusAtual === 'em_pausa' ? 'rascunho' : 'em_pausa';
+
+    const listaAtualizada = bancoLocal.map((pesquisa) => {
+      if (pesquisa.id_pesquisa === idPesquisa) {
+        return { ...pesquisa, status: novoStatus };
+      }
+      return pesquisa;
+    });
+
+    // atualizando estado
+    setBancolocal(listaAtualizada);
+    localStorage.setItem('pesquisas', JSON.stringify(listaAtualizada));
+  };
+
+  // função pra excluir pesquisa
+  const handleExcluirPesquisa = (idPesquisa) => {
+    const listaFiltrada = bancoLocal.filter((p) => p.id_pesquisa !== idPesquisa);
+    setBancolocal(listaFiltrada);
+    localStorage.setItem('pesquisas', JSON.stringify(listaFiltrada));
+  };
+
   return (
     <div className="flex flex-col w-full mx-auto h-screen">
       {/* cabeçalho */}
@@ -26,10 +50,10 @@ export default function DashboardPesquisa() {
         {/* logo e nav */}
         <div className="w-full flex items-center justify-between h-auto min-h-[50px] lg:h-[62px] bg-indigo-700 p-3 md:p-4 gap-2 md:gap-4">
           <div className='flex items-center ml-2 md:ml-4 gap-2'>
-          <img src={logotipo} alt="logotipo da NextPoint" />
-          <h2 className="text-white text-sm md:text-base lg:text-lg font-bold truncate">
-            ResearchPoint
-          </h2>
+            <img src={logotipo} alt="logotipo da NextPoint" />
+            <h2 className="text-white text-sm md:text-base lg:text-lg font-bold truncate">
+              ResearchPoint
+            </h2>
           </div>
           <Nav />
           <div className="flex">
@@ -68,14 +92,16 @@ export default function DashboardPesquisa() {
             <SearchBar />
           </div>
         </div>
+        
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 lg:gap-6">
           {bancoLocal.map((pesquisa) => (
             <CardForm 
-            key={pesquisa.id_pesquisa}
-            pesquisa={pesquisa}
-            onClick={() => navigate(`/formulario/${pesquisa.id_pesquisa}`)}
+              key={pesquisa.id_pesquisa}
+              pesquisa={pesquisa}
+              onClick={() => navigate(`/formulario/${pesquisa.id_pesquisa}`)}
+              onAlternarPausa={handleAlternarPausa} // 👈 Passando a função de pausa pro filho
+              onExcluir={handleExcluirPesquisa}     // 👈 Passando a função de excluir pro filho
             />
-
           ))}
         </div>
       </div>

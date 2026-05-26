@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom'; 
 import { useNavigate } from 'react-router-dom';
 // importação dos ícones
-import { FileText, MoreVertical, Play, Trash2, FilePieChart } from 'lucide-react';
+import { FileText, MoreVertical, Play, Trash2, FilePieChart, Pause, Eye } from 'lucide-react';
 // importação dos dados (cores dos status)
-import { statusStyles, status } from '../../utils/dados';
+import { statusStyles } from '../../utils/dados';
 
 // paleta de cores randomica
 const PALETA_CORES = [
@@ -16,7 +16,7 @@ const PALETA_CORES = [
   'bg-lime-500',
 ];
 
-export default function CardForm({ pesquisa, onClick, onExcluir }) {
+export default function CardForm({ pesquisa, onClick, onExcluir, onAlternarPausa }) {
   const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
   const [coordenadas, setCoordenadas] = useState({ top: 0, left: 0 }); // Guarda a posição do clique
@@ -28,12 +28,11 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
     PALETA_CORES[Math.floor(Math.random() * PALETA_CORES.length)],
   );
 
-  // Calcula a posição exata na tela onde o menu deve abrir antes de ser teletransportado
+  // Calcula a posição exata na tela onde o menu deve abrir antes de ser teletransportado via Portal
   const abrirMenu = (e) => {
     e.stopPropagation();
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      // Define a posição logo abaixo do botão de 3 pontinhos, considerando o scroll da tela
       setCoordenadas({
         top: rect.bottom + window.scrollY,
         left: rect.left + window.scrollX - 160,
@@ -61,10 +60,8 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
       onClick={onClick}
       className="bg-white rounded-lg md:rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col h-full cursor-pointer hover:shadow-md transition-shadow relative"
     >
-      {/* navbar azul */}
-      <div
-        className={`h-20 md:h-24 lg:h-28 w-full ${corAleatoriaRef.current}`}
-      />
+      {/* navbar colorida */}
+      <div className={`h-20 md:h-24 lg:h-28 w-full ${corAleatoriaRef.current}`} />
 
       {/* conteúdo do card */}
       <div className="p-3 md:p-4 lg:p-5 flex flex-col flex-grow justify-between gap-3 md:gap-4">
@@ -74,7 +71,7 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
               {pesquisa.titulo || 'Sem título'}
             </h3>
 
-            {/* Botão comreferência (ref) */}
+            {/* Botão de 3 pontinhos */}
             <button
               ref={buttonRef}
               type="button"
@@ -99,6 +96,7 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
             </span>
           </div>
 
+          {/* status com cores randomicos */}
           <span
             className={`text-[8px] md:text-[10px] tracking-wider font-bold px-2 md:px-2.5 py-0.5 md:py-1 rounded-md uppercase shrink-0 ${
               statusStyles[
@@ -110,12 +108,14 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
           >
             {pesquisa?.status === 'em_pausa'
               ? 'Em Pausa'
+              : pesquisa?.status === 'concluida'
+              ? 'Concluída'
               : pesquisa?.status || 'Rascunho'}
           </span>
         </div>
       </div>
 
-      {/* Se o menu está aberto, ele é renderizado fora do card */}
+      {/* Portal que teleporta o modal para fora da zona de corte do card */}
       {menuAberto &&
         createPortal(
           <div
@@ -127,28 +127,47 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
             }}
             className="w-48 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 py-1.5 animate-in fade-in zoom-in-95 duration-100"
           >
-            {/* muda de texto com base no status real da pesquisa */}
+            {/*iniciar / continuar / visualizar */}
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 setMenuAberto(false);
-
-                // Redireciona o usuário para a página de resposta passando o ID correspondente
                 navigate(`/responder/${pesquisa.id_pesquisa}`);
               }}
-              className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left font-medium"
+              className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left font-medium transition-colors"
             >
-              <Play className="w-4 h-4 text-slate-500" />
+              {pesquisa.status === 'concluida' ? (
+                <Eye className="w-4 h-4 text-slate-500" />
+              ) : (
+                <Play className="w-4 h-4 text-slate-500" />
+              )}
               <span>
                 {pesquisa.status === 'em_pausa' && 'Continuar pesquisa'}
                 {pesquisa.status === 'concluida' && 'Visualizar pesquisa'}
-                {pesquisa.status !== 'em_pausa' &&
-                  pesquisa.status !== 'concluida' &&
-                  'Iniciar pesquisa'}
+                {pesquisa.status !== 'em_pausa' && pesquisa.status !== 'concluida' && 'Iniciar pesquisa'}
               </span>
             </button>
 
+            {/* botão de Pausar / retomar*/}
+            {pesquisa.status !== 'concluida' && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setMenuAberto(false);
+                  onAlternarPausa(pesquisa.id_pesquisa, pesquisa.status); // Aciona o pai
+                }}
+                className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left font-medium transition-colors"
+              >
+                <Pause className="w-4 h-4 text-slate-500" />
+                <span>
+                  {pesquisa.status === 'em_pausa' ? 'Retomar pesquisa' : 'Pausar pesquisa'}
+                </span>
+              </button>
+            )}
+
+            {/* emitir relatório */}
             <button
               type="button"
               onClick={(e) => {
@@ -164,6 +183,7 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
 
             <hr className="border-slate-100 my-1" />
 
+            {/*excluir pesquisa */}
             <button
               type="button"
               onClick={(e) => {
@@ -183,7 +203,7 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
               <span>Excluir pesquisa</span>
             </button>
           </div>,
-          document.body, //
+          document.body,
         )}
     </div>
   );
