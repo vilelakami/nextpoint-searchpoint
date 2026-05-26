@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+// importação dos ícones
 import { ArrowLeft } from 'lucide-react';
+// importando dados pessoais
 import DadosPessoais from '../components/dados-pessoais/DadosPessoais'; 
 
 export default function ResponderFormulario() {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  // Estado para guardar os dados da pesquisa que veio do localStorage
+  // guardando os dados da pesquisa que veio do localStorage
   const [pesquisa, setPesquisa] = useState(null);
   
-  // Estado para salvar as respostas que o usuário vai marcar
+  // salvando as respostas que o usuário vai marcar
   const [respostas, setRespostas] = useState({});
 
   useEffect(() => {
@@ -23,7 +25,7 @@ export default function ResponderFormulario() {
     }
   }, [id]);
 
-  // Função para salvar a resposta digitada ou selecionada 
+  // salvando a resposta digitada ou selecionada 
   const handleMudarResposta = (perguntaId, valor) => {
     setRespostas({
       ...respostas,
@@ -31,9 +33,24 @@ export default function ResponderFormulario() {
     });
   };
 
-  const handleSalvarRespostas = () => {
-    console.log("Respostas coletadas:", respostas);
-    alert("Pesquisa respondida com sucesso!");
+  // salvando os tatus da pesquisa
+  const salvarProgressoPesquisa = (novoStatus, mensagemSucesso) => {
+    const pesquisasSalvas = JSON.parse(localStorage.getItem('pesquisas')) || [];
+    
+    // Atualizamos o status e as respostas dessa pesquisa específica dentro da nossa lista global
+    const listaAtualizada = pesquisasSalvas.map((p) => {
+      if (p.id_pesquisa === id) {
+        return { 
+          ...p, 
+          status: novoStatus,
+          respostasSalvas: respostas // Guardamos as respostas atuais para não perdê-las ao pausar
+        };
+      }
+      return p;
+    });
+
+    localStorage.setItem('pesquisas', JSON.stringify(listaAtualizada));
+    alert(mensagemSucesso);
     navigate('/Dashboard');
   };
 
@@ -53,35 +70,40 @@ export default function ResponderFormulario() {
           <ArrowLeft className="w-5 h-5 text-white" />
           <span>Voltar ao Dashboard</span>
         </button>
+
         <div className='flex items-center gap-5'>
-        <button
-          onClick={navigate('/')}
-          type="button"
-          className="bg-transparent text-white hover:text-gray-200 font-medium text-xs md:text-sm px-2 md:px-3 py-1"
-        >
-          Cancelar
-        </button>
-        <button
-          onClick={handleSalvarRespostas}
-          type="button"
-          className="bg-white text-indigo-700 hover:bg-gray-200 font-medium text-xs md:text-sm py-1 px-3 md:px-6 rounded"
-        >
-          Pausar
-        </button>
-        <button
-          onClick={handleSalvarRespostas}
-          type="button"
-          className="bg-white text-indigo-700 hover:bg-gray-200 font-medium text-xs md:text-sm py-1 px-3 md:px-6 rounded"
-        >
-          Finalizar
-        </button>
+          <button
+            onClick={() => navigate('/Dashboard')} 
+            type="button"
+            className="bg-transparent text-white hover:text-gray-200 font-medium text-xs md:text-sm px-2 md:px-3 py-1"
+          >
+            Cancelar
+          </button>
+
+          {/* botão 'pausar' que altera os status para 'em_pausa' */}
+          <button
+            onClick={() => salvarProgressoPesquisa('em_pausa', 'Pesquisa pausada! Você pode continuar mais tarde.')}
+            type="button"
+            className="bg-white text-indigo-700 hover:bg-gray-200 font-medium text-xs md:text-sm py-1 px-3 md:px-6 rounded"
+          >
+            Pausar
+          </button>
+
+          {/* 🏁 botão 'finalizar' que altera os status para 'concluida' */}
+          <button
+            onClick={() => salvarProgressoPesquisa('concluida', 'Pesquisa finalizada com sucesso!')}
+            type="button"
+            className="bg-white text-indigo-700 hover:bg-gray-200 font-medium text-xs md:text-sm py-1 px-3 md:px-6 rounded"
+          >
+            Finalizar
+          </button>
         </div>
       </div>
 
       {/* Área do Formulário */}
       <div className="flex-grow overflow-y-auto w-full max-w-4xl mx-auto px-4 py-6 md:py-10">
         
-        {/* Bloco Principal: Título e registro da pesquisa */}
+        {/*título, descrição e nº de registro da pesquisa */}
         <div className="w-full bg-white rounded-xl shadow-md border border-slate-200 p-6 md:p-8 flex flex-col gap-4 mb-6">
           <h1 className="text-3xl font-bold text-slate-900 break-words">
             {pesquisa.titulo || 'Formulário Sem Título'}
@@ -96,17 +118,16 @@ export default function ResponderFormulario() {
           </div>
         </div>
 
-        {/* dadso do entrevistado */}
+        {/* Dados do entrevistado */}
         <div className="w-full bg-white rounded-xl shadow-md border border-slate-200 p-6 mb-6">
           <DadosPessoais />
         </div>
 
-        {/* perguntas = apenas resposta */}
+        {/* Perguntas */}
         <div className="flex flex-col gap-6 pb-12">
           {pesquisa.perguntas?.map((pergunta, index) => (
             <div key={pergunta.id || index} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-4">
               
-              {/* Cabeçalho da questão*/}
               <div>
                 <h3 className="text-base md:text-lg font-bold text-slate-800 break-words">
                   {index + 1}. {pergunta.titulo || 'Pergunta sem enunciado'}
@@ -117,9 +138,7 @@ export default function ResponderFormulario() {
                 )}
               </div>
 
-              {/* Renderização Condicional das Respostas */}
               {pergunta.tipo === 'texto' ? (
-                // Se for campo de TEXTO: Renderiza um input livre para escrita
                 <div className="mt-2">
                   <input
                     type="text"
@@ -130,7 +149,6 @@ export default function ResponderFormulario() {
                   />
                 </div>
               ) : (
-                // Se for MÚLTIPLA ESCOLHA: Renderiza a lista de radio buttons clicáveis
                 <div className="flex flex-col gap-3 mt-2 pl-1">
                   {pergunta.opcoes?.map((opcao, indexOpcao) => (
                     <label 

@@ -1,16 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom'; // 👈 IMPORTANTE: Adicione esta importação!
-import {
-  FileText,
-  MoreVertical,
-  Play,
-  Trash2,
-  FilePieChart,
-} from 'lucide-react';
-
-import { statusStyles, status } from '../../utils/dados';
+import { createPortal } from 'react-dom'; 
 import { useNavigate } from 'react-router-dom';
+// importação dos ícones
+import { FileText, MoreVertical, Play, Trash2, FilePieChart } from 'lucide-react';
+// importação dos dados (cores dos status)
+import { statusStyles, status } from '../../utils/dados';
 
+// paleta de cores randomica
 const PALETA_CORES = [
   'bg-pink-400',
   'bg-teal-400',
@@ -27,6 +23,7 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
   const buttonRef = useRef(null);
   const menuRef = useRef(null);
 
+  // função que gera a cor aleatória dos cards
   const corAleatoriaRef = useRef(
     PALETA_CORES[Math.floor(Math.random() * PALETA_CORES.length)],
   );
@@ -64,12 +61,12 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
       onClick={onClick}
       className="bg-white rounded-lg md:rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col h-full cursor-pointer hover:shadow-md transition-shadow relative"
     >
-      {/* Banner Superior */}
+      {/* navbar azul */}
       <div
         className={`h-20 md:h-24 lg:h-28 w-full ${corAleatoriaRef.current}`}
       />
 
-      {/* Corpo do Card */}
+      {/* conteúdo do card */}
       <div className="p-3 md:p-4 lg:p-5 flex flex-col flex-grow justify-between gap-3 md:gap-4">
         <div>
           <div className="flex justify-between items-start gap-2 mb-1 md:mb-2">
@@ -93,7 +90,7 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
           </p>
         </div>
 
-        {/* Rodapé do Card */}
+        {/* rodapé do card */}
         <div className="flex justify-between items-center mt-1 md:mt-2">
           <div className="flex items-center gap-1 md:gap-1.5 text-slate-600 text-xs font-semibold">
             <FileText className="w-3 h-3 md:w-4 md:h-4 text-slate-400 shrink-0" />
@@ -107,13 +104,13 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
               statusStyles[
                 typeof pesquisa?.status === 'string'
                   ? pesquisa.status.toLowerCase()
-                  : 'em_pausa'
+                  : 'rascunho'
               ] || statusStyles.rascunho
             }`}
           >
             {pesquisa?.status === 'em_pausa'
               ? 'Em Pausa'
-              : pesquisa?.status || 'Em Pausa'}
+              : pesquisa?.status || 'Rascunho'}
           </span>
         </div>
       </div>
@@ -130,17 +127,26 @@ export default function CardForm({ pesquisa, onClick, onExcluir }) {
             }}
             className="w-48 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 py-1.5 animate-in fade-in zoom-in-95 duration-100"
           >
+            {/* muda de texto com base no status real da pesquisa */}
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 setMenuAberto(false);
+
+                // Redireciona o usuário para a página de resposta passando o ID correspondente
                 navigate(`/responder/${pesquisa.id_pesquisa}`);
               }}
               className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left font-medium"
             >
-              <Play size={16} className="text-emerald-500" />
-              Iniciar pesquisa
+              <Play className="w-4 h-4 text-slate-500" />
+              <span>
+                {pesquisa.status === 'em_pausa' && 'Continuar pesquisa'}
+                {pesquisa.status === 'concluida' && 'Visualizar pesquisa'}
+                {pesquisa.status !== 'em_pausa' &&
+                  pesquisa.status !== 'concluida' &&
+                  'Iniciar pesquisa'}
+              </span>
             </button>
 
             <button

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Pencil } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+// importação dos ícones
+import { ArrowLeft, Pencil } from 'lucide-react';
 // importação das páginas
 import Pergunta from '../components/questão/Pergunta';
 import Footer from '../components/footer/Footer';
@@ -20,7 +21,7 @@ export default function Formulario() {
     idade_entrevistado: '',
     sexo_entrevistado: '',
     escolaridade_entrevistado: '',
-    status: 'em_pausa',
+    status: 'rascunho',
     perguntas: [
       {
         titulo: '',
@@ -69,7 +70,7 @@ export default function Formulario() {
     });
   };
 
-  // adicionando opção nas perguntas
+  // adicionando opções nas perguntas
   const onAdicionarOpcao = (perguntaId) => {
     setDadosFormulario({
       ...dadosFormulario,
@@ -95,7 +96,7 @@ export default function Formulario() {
     const novoForms = {
       ...dadosFormulario,
       id_pesquisa: Date.now().toString(), //criando um id unico a partir da data por milissegundos
-      status: 'em_pausa',
+      status: 'rascunho',
     };
     const listaCompleta = [...lista, novoForms];
 

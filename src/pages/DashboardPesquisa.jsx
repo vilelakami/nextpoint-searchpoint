@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import Nav from '../components/navbar/Nav';
+import { Navigate, useNavigate } from 'react-router-dom';
+// importação dos ícones
 import { Settings, Plus } from 'lucide-react';
+import logotipo from '../assets/icons/logotipo.svg';
+// importação das páginas
+import Nav from '../components/navbar/Nav';
 import Status from '../components/status/Status';
 import SearchBar from '../components/searchbar/SearchBar';
 import CardForm from '../components/cards-forms/CardsForms';
-import logotipo from '../assets/icons/logotipo.svg';
-import { Navigate, useNavigate } from 'react-router-dom';
 
 export default function DashboardPesquisa() {
   const [modalFormsAberto, setModalFormsAberto] = useState(false);
