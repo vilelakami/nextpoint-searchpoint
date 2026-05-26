@@ -57,7 +57,7 @@ export default function Pergunta({ dados, atualizarPergunta, adicionarOpcao }) {
                 const arquivo = e.target.files[0]; // Pega o primeiro arquivo selecionado
                 if (arquivo) {
                   // Avisa o pai enviando o ID da pergunta, o campo 'imagem' e o arquivo
-                  onAtualizarPergunta(dados.id, 'imagem', arquivo);
+                  atualizarPergunta(dados.id, 'imagem', arquivo);
                 }
               }}
             />
@@ -120,7 +120,7 @@ export default function Pergunta({ dados, atualizarPergunta, adicionarOpcao }) {
                 onChange={(e) => {
                   const novasOpcoes = [...dados.opcoes];
                   novasOpcoes[indexOpcao] = e.target.value;
-                  atualizarPergunta(dados.id, 'opcoes', e.target.value);
+                  atualizarPergunta(dados.id, 'opcoes', novasOpcoes);
                 }}
                 className="flex-grow bg-transparent border-b border-transparent hover:border-slate-200 focus:border-[#4F46E5] text-slate-800 font-normal text-sm py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px]"
                 placeholder="Opção 1"

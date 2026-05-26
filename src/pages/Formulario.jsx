@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Pencil } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 // importação das páginas
 import Pergunta from '../components/questão/Pergunta';
 import Footer from '../components/footer/Footer';
@@ -12,6 +12,7 @@ import { ajustarAltura } from '../utils/dados';
 export default function Formulario() {
   const navigate = useNavigate();
   const [dadosFormulario, setDadosFormulario] = useState({
+    id: 'pergunta-inicial',
     titulo: '',
     descricao: '',
     id_pesquisa: '',
@@ -19,9 +20,9 @@ export default function Formulario() {
     idade_entrevistado: '',
     sexo_entrevistado: '',
     escolaridade_entrevistado: '',
+    status: 'em_pausa',
     perguntas: [
       {
-        id: 'id-unico-1',
         titulo: '',
         descrcao: '',
         tipo: 'multipla_escolha',
@@ -31,6 +32,20 @@ export default function Formulario() {
       },
     ],
   });
+
+  const { id } = useParams(); //id que veio pela url
+
+  useEffect(() => {
+    if(id) {
+      const pesquisasSalvas = JSON.parse(localStorage.getItem('pesquisas')) || [];
+      const pesquisaEncontrada = pesquisasSalvas.find(p => p.id_pesquisa === id);
+
+      if(pesquisaEncontrada){
+        setDadosFormulario(pesquisaEncontrada);
+      }
+    }
+  }, [id]);
+
 
   // função pra salvar os inputs no array dadosFormulario
   const handleInputChange = (e) => {
@@ -72,6 +87,24 @@ export default function Formulario() {
     });
   };
 
+  // botão enviar/salvar
+  const handleEnviar = (e) => {
+    e.preventDefault();
+    const lista = JSON.parse(localStorage.getItem('pesquisas')) || [];
+
+    const novoForms = {
+      ...dadosFormulario,
+      id_pesquisa: Date.now().toString(), //criando um id unico a partir da data por milissegundos
+      status: 'em_pausa',
+    };
+    const listaCompleta = [...lista, novoForms];
+
+    localStorage.setItem('pesquisas', JSON.stringify(listaCompleta));
+
+    alert('Formulário enviado com sucesso!');
+    navigate('/');
+  };
+
   return (
     <div className="flex flex-col w-full mx-auto h-screen font-montserrat">
       <div className="relative w-full flex flex-col h-auto min-h-[28vh] lg:h-[33vh] bg-indigo-500">
@@ -95,6 +128,7 @@ export default function Formulario() {
               Cancelar
             </button>
             <button
+              onClick={handleEnviar}
               type="button"
               className="bg-white text-indigo-700 hover:bg-gray-200 font-medium text-xs md:text-sm py-1 px-3 md:px-6 rounded"
             >
@@ -172,7 +206,7 @@ export default function Formulario() {
               <DadosPessoais />
               {dadosFormulario.perguntas.map((pergunta, index) => (
                 <Pergunta
-                  key={pergunta.id}
+                  key={pergunta.id || index} 
                   dados={pergunta}
                   atualizarPergunta={atualizarPergunta}
                   adicionarOpcao={onAdicionarOpcao}

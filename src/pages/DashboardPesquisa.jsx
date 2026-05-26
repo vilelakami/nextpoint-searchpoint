@@ -10,6 +10,12 @@ import { Navigate, useNavigate } from 'react-router-dom';
 export default function DashboardPesquisa() {
   const [modalFormsAberto, setModalFormsAberto] = useState(false);
   const navigate = useNavigate();
+  const [bancoLocal, setBancolocal] = useState([]);
+
+  useEffect(() => {
+    const pesquisasSalvas = JSON.parse(localStorage.getItem('pesquisas')) || [];
+    setBancolocal(pesquisasSalvas);
+  }, []);
 
   return (
     <div className="flex flex-col w-full mx-auto h-screen">
@@ -61,7 +67,14 @@ export default function DashboardPesquisa() {
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 lg:gap-6">
-          <CardForm />
+          {bancoLocal.map((pesquisa) => (
+            <CardForm 
+            key={pesquisa.id_pesquisa}
+            pesquisa={pesquisa}
+            onClick={() => navigate(`/formulario/${pesquisa.id_pesquisa}`)}
+            />
+
+          ))}
         </div>
       </div>
     </div>

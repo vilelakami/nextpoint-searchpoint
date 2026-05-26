@@ -13,7 +13,7 @@ const PALETA_CORES = [
   'bg-lime-500', // Verde alface
 ];
 
-export default function CardForm({ titulo, descricao, qtdPerguntas, status }) {
+export default function CardForm({ pesquisa, onClick }) {
   const statusParaTeste = 'concluida';
 
   // 2. Sorteia uma cor da paleta toda vez que o card nasce na tela
@@ -21,7 +21,7 @@ export default function CardForm({ titulo, descricao, qtdPerguntas, status }) {
     PALETA_CORES[Math.floor(Math.random() * PALETA_CORES.length)];
 
   return (
-    <div className="bg-white rounded-lg md:rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col h-full">
+    <div onClick={onClick} className="bg-white rounded-lg md:rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col h-full">
       {/* Banner Superior com Cor Aleatória */}
       <div className={`h-20 md:h-24 lg:h-28 w-full ${corAleatoria}`} />
 
@@ -31,7 +31,7 @@ export default function CardForm({ titulo, descricao, qtdPerguntas, status }) {
         <div>
           <div className="flex justify-between items-start gap-2 mb-1 md:mb-2">
             <h3 className="text-base md:text-lg lg:text-xl font-bold text-slate-800 line-clamp-2 leading-tight">
-              Formulário de Satisfação do Cliente
+              {pesquisa.titulo || 'Sem título'}
             </h3>
             <button className="text-slate-400 hover:text-slate-600 p-0.5 md:p-1 rounded-full hover:bg-slate-50 transition-colors shrink-0">
               <MoreVertical className="w-4 h-4 md:w-5 md:h-5" />
@@ -40,24 +40,7 @@ export default function CardForm({ titulo, descricao, qtdPerguntas, status }) {
 
           {/* Descrição */}
           <p className="text-xs md:text-sm text-slate-500 line-clamp-2">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias iusto
-            exercitationem impedit nesciunt eligendi, ea architecto itaque iure
-            iste placeat doloribus laboriosam aperiam dolore blanditiis
-            quibusdam repudiandae minus, eum quo! Quaerat dicta consequuntur,
-            rem quos, id, eligendi fugiat iure sit voluptate soluta esse beatae
-            reiciendis at atque officia. Nemo, alias! Sint dolore a incidunt
-            architecto expedita ducimus consectetur minima tempore. Praesentium
-            aperiam voluptate quis voluptatibus incidunt soluta velit labore
-            quae architecto dolorum repellendus, nemo est saepe, repellat ipsum
-            nisi laboriosam perspiciatis similique? Alias iusto asperiores
-            placeat hic accusantium voluptate atque! Adipisci provident aliquam
-            voluptatibus nihil ea numquam commodi eius corrupti ullam.
-            Aspernatur cupiditate assumenda delectus tempora harum, fugiat,
-            corrupti rerum quidem quae consequuntur, dignissimos eum beatae
-            alias ea a doloribus. Maiores asperiores blanditiis cumque aliquid
-            omnis tempora tenetur quas adipisci itaque, illum vel. Voluptate
-            facere error vitae ducimus maiores, odit culpa soluta ea aliquam
-            harum, molestias exercitationem omnis! Neque, nulla!
+            {pesquisa.descricao || 'Sem descrição informada...'}
           </p>
         </div>
 
@@ -66,14 +49,14 @@ export default function CardForm({ titulo, descricao, qtdPerguntas, status }) {
           {/* Contador de Perguntas */}
           <div className="flex items-center gap-1 md:gap-1.5 text-slate-600 text-xs font-semibold">
             <FileText className="w-3 h-3 md:w-4 md:h-4 text-slate-400 shrink-0" />
-            <span className="truncate">18 Perguntas</span>
+            <span className="truncate">{pesquisa.perguntas ? pesquisa.perguntas.lenght : 0} perguntas</span>
           </div>
 
           {/* Badge de Status */}
           <span
-            className={`text-[8px] md:text-[10px] tracking-wider font-bold px-2 md:px-2.5 py-0.5 md:py-1 rounded-md uppercase shrink-0 ${statusStyles[status?.toLowerCase()] || statusStyles.rascunho}`}
+            className={`text-[8px] md:text-[10px] tracking-wider font-bold px-2 md:px-2.5 py-0.5 md:py-1 rounded-md uppercase shrink-0 ${statusStyles[typeof pesquisa?.status === 'string' ? pesquisa.status.toLowerCase() : 'em_pausa'] || statusStyles.rascunho}`}
           >
-            {statusParaTeste}
+            {typeof pesquisa.status === 'string' ? pesquisa.status : 'Em Pausa'}
           </span>
         </div>
       </div>

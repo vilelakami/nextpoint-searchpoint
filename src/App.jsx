@@ -12,6 +12,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/Dashboard" />} />
             <Route path="/Dashboard" element={<Dashboard />} />
             <Route path="/Formulario" element={<Formulario />} />
+            <Route path="/formulario/:id" element={<Formulario />} />
           </Routes>
         </main>
         <footer className="flex fixed bottom-1 left-1/2 text-sm left-1/2 -translate-x-1/2 shadow-xl">
