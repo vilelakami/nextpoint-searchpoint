@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/DashboardPesquisa';
 import Formulario from './pages/Formulario';
 import ResponderFormulario from './pages/ResponderPesquisa';
+import Admin from './pages/usuarios/Admin';
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/Dashboard" />} />
             <Route path="/Dashboard" element={<Dashboard />} />
             <Route path="/Formulario" element={<Formulario />} />
+            <Route path="/Admin" element={<Admin />} />
             <Route path="/formulario/:id" element={<Formulario />} />
             <Route path="/responder/:id" element={<ResponderFormulario />} />
           </Routes>

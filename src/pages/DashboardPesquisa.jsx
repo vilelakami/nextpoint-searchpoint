@@ -38,7 +38,9 @@ export default function DashboardPesquisa() {
 
   // função pra excluir pesquisa
   const handleExcluirPesquisa = (idPesquisa) => {
-    const listaFiltrada = bancoLocal.filter((p) => p.id_pesquisa !== idPesquisa);
+    const listaFiltrada = bancoLocal.filter(
+      (p) => p.id_pesquisa !== idPesquisa,
+    );
     setBancolocal(listaFiltrada);
     localStorage.setItem('pesquisas', JSON.stringify(listaFiltrada));
   };
@@ -49,7 +51,7 @@ export default function DashboardPesquisa() {
       <div className="w-full flex flex-col h-auto min-h-[30vh] lg:h-1/3 bg-indigo-500">
         {/* logo e nav */}
         <div className="w-full flex items-center justify-between h-auto min-h-[50px] lg:h-[62px] bg-indigo-700 p-3 md:p-4 gap-2 md:gap-4">
-          <div className='flex items-center ml-2 md:ml-4 gap-2'>
+          <div className="flex items-center ml-2 md:ml-4 gap-2">
             <img src={logotipo} alt="logotipo da NextPoint" />
             <h2 className="text-white text-sm md:text-base lg:text-lg font-bold truncate">
               ResearchPoint
@@ -57,7 +59,9 @@ export default function DashboardPesquisa() {
           </div>
           <Nav />
           <div className="flex">
-            <Settings className="w-4 h-4 md:size-5 text-white mr-2 md:mr-4 shrink-0" />
+            <button type="button" onClick={() => navigate('/Admin')}>
+              <Settings className="w-4 h-4 md:size-5 text-white mr-2 md:mr-4 shrink-0 hover:text-black" />
+            </button>
           </div>
         </div>
         {/* conteúdo do cabeçalho */}
@@ -92,15 +96,15 @@ export default function DashboardPesquisa() {
             <SearchBar />
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 lg:gap-6">
           {bancoLocal.map((pesquisa) => (
-            <CardForm 
+            <CardForm
               key={pesquisa.id_pesquisa}
               pesquisa={pesquisa}
               onClick={() => navigate(`/formulario/${pesquisa.id_pesquisa}`)}
               onAlternarPausa={handleAlternarPausa} // 👈 Passando a função de pausa pro filho
-              onExcluir={handleExcluirPesquisa}     // 👈 Passando a função de excluir pro filho
+              onExcluir={handleExcluirPesquisa} // 👈 Passando a função de excluir pro filho
             />
           ))}
         </div>
