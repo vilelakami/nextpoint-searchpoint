@@ -10,6 +10,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 export default function DashboardPesquisa() {
   const [modalFormsAberto, setModalFormsAberto] = useState(false);
   const navigate = useNavigate();
+
   return (
     <div className="flex flex-col w-full mx-auto h-screen">
       {/* cabeçalho */}

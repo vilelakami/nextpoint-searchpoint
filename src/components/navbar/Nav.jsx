@@ -17,7 +17,7 @@ export default function Navbar() {
           to="/Arquivados"
           className="text-xs md:text-sm text-white font-normal relative pb-2 hover:border-b-2 border-white transition-colors whitespace-nowrap"
         >
-          Arquivados
+          Gráficos
         </NavLink>
       </div>
     </nav>

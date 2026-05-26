@@ -3,20 +3,20 @@ import React from 'react';
 export default function DadosPessoais() {
   return (
     <div>
-      <div class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-lg border border-slate-200">
-        <table class="w-full text-sm text-center rtl:text-right text-body">
-          <thead class="text-sm text-body bg-neutral-secondary-soft">
+      <div className="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-lg border border-slate-200">
+        <table className="w-full text-sm text-center rtl:text-right text-body">
+          <thead className="text-sm text-body bg-neutral-secondary-soft">
             <tr>
-              <th scope="col" class="px-6 py-3 font-medium">
+              <th scope="col" className="px-6 py-3 font-medium">
                 Nome
               </th>
-              <th scope="col" class="px-6 py-3 font-medium">
+              <th scope="col" className="px-6 py-3 font-medium">
                 Idade
               </th>
-              <th scope="col" class="px-6 py-3 font-medium">
+              <th scope="col" className="px-6 py-3 font-medium">
                 Sexo
               </th>
-              <th scope="col" class="px-6 py-3 font-medium">
+              <th scope="col" className="px-6 py-3 font-medium">
                 Escolaridade
               </th>
             </tr>

@@ -1,15 +1,76 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+// importação das páginas
 import Pergunta from '../components/questão/Pergunta';
 import Footer from '../components/footer/Footer';
 import DadosPessoais from '../components/dados-pessoais/DadosPessoais';
-
-import { ajustarAltura } from '../utils/dados';
 import ConfiguracaoPergunta from '../components/informações/ConfiguracaoPergunta';
+// importação dos dados
+import { ajustarAltura } from '../utils/dados';
 
 export default function Formulario() {
   const navigate = useNavigate();
+  const [dadosFormulario, setDadosFormulario] = useState({
+    titulo: '',
+    descricao: '',
+    id_pesquisa: '',
+    nome_entrevistado: '',
+    idade_entrevistado: '',
+    sexo_entrevistado: '',
+    escolaridade_entrevistado: '',
+    perguntas: [
+      {
+        id: 'id-unico-1',
+        titulo: '',
+        descrcao: '',
+        tipo: 'multipla_escolha',
+        obrigatoria: false,
+        imagem: null,
+        opcoes: [''],
+      },
+    ],
+  });
+
+  // função pra salvar os inputs no array dadosFormulario
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setDadosFormulario({
+      ...dadosFormulario,
+      [name]: value,
+    });
+  };
+
+  // função pra atualizar pergunta
+  const atualizarPergunta = (id, campo, novoValor) => {
+    setDadosFormulario({
+      ...dadosFormulario,
+      perguntas: dadosFormulario.perguntas.map((pergunta) => {
+        if (pergunta.id === id) {
+          return { ...pergunta, [campo]: novoValor };
+        }
+        return pergunta;
+      }),
+    });
+  };
+
+  // adicionando opção nas perguntas
+  const onAdicionarOpcao = (perguntaId) => {
+    setDadosFormulario({
+      ...dadosFormulario,
+      // Percorre o array de perguntas para achar a pergunta certa pelo ID
+      perguntas: dadosFormulario.perguntas.map((perg) => {
+        if (perg.id === perguntaId) {
+          return {
+            ...perg,
+            // Mantém as opções que já existem e adiciona uma nova em branco no final
+            opcoes: [...perg.opcoes, ''],
+          };
+        }
+        return perg; // Deixa as outras perguntas como estavam
+      }),
+    });
+  };
 
   return (
     <div className="flex flex-col w-full mx-auto h-screen font-montserrat">
@@ -51,9 +112,11 @@ export default function Formulario() {
             <div className="p-4 md:p-6 lg:p-8 flex flex-col gap-4 md:gap-6 overflow-y-auto">
               <div className="flex flex-col gap-3">
                 {/* Título Principal Auto-Expansível */}
-                {/* Alterado para items-start para manter o lápis alinhado no topo quando quebrar linha */}
                 <div className="flex items-start justify-between gap-4 border-b border-transparent hover:border-slate-200/60 focus-within:border-indigo-500 transition-colors group">
                   <textarea
+                    name="titulo"
+                    value={dadosFormulario.titulo}
+                    onChange={handleInputChange}
                     rows={1}
                     onInput={ajustarAltura}
                     className="flex-grow bg-transparent placeholder:text-black text-black font-semibold text-3xl md:text-4xl py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[44px] md:min-h-[52px]"
@@ -70,6 +133,9 @@ export default function Formulario() {
                 {/* Descrição Principal Auto-Expansível */}
                 <div className="flex items-start justify-between gap-4 border-b border-transparent hover:border-slate-200/60 focus-within:border-indigo-500 transition-colors group">
                   <textarea
+                    name="descricao"
+                    value={dadosFormulario.descricao}
+                    onChange={handleInputChange}
                     rows={1}
                     onInput={ajustarAltura}
                     className="flex-grow bg-transparent placeholder:text-slate-500 text-slate-600 font-normal text-sm md:text-base py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px] md:min-h-[32px]"
@@ -87,6 +153,9 @@ export default function Formulario() {
               {/* id da pesquisa */}
               <div className="flex items-center border-b border-transparent hover:border-slate-200/60 focus-within:border-indigo-500 transition-colors group w-fit">
                 <textarea
+                  name="id_pesquisa"
+                  value={dadosFormulario.id_pesquisa}
+                  onChange={handleInputChange}
                   rows={1}
                   onInput={ajustarAltura}
                   className="w-40 bg-transparent placeholder:text-slate-500 text-slate-600 font-normal text-sm md:text-base py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px] md:min-h-[32px]"
@@ -100,8 +169,15 @@ export default function Formulario() {
                 </button>
               </div>
               <hr className="border-slate-200/40" />
-              <DadosPessoais/>
-              <Pergunta />
+              <DadosPessoais />
+              {dadosFormulario.perguntas.map((pergunta, index) => (
+                <Pergunta
+                  key={pergunta.id}
+                  dados={pergunta}
+                  atualizarPergunta={atualizarPergunta}
+                  adicionarOpcao={onAdicionarOpcao}
+                />
+              ))}
             </div>
           </div>
         </div>
