@@ -9,7 +9,7 @@ import Status from '../components/status/Status';
 import SearchBar from '../components/searchbar/SearchBar';
 import CardForm from '../components/cards-forms/CardsForms';
 
-// Importação dos componentes do Radix UI e TanStack Table
+// Importação dos componentes do TanStack Table
 import {
   useReactTable,
   getCoreRowModel,
@@ -52,25 +52,29 @@ export default function DashboardPesquisa() {
 
   // colunas que a biblioteca usará como referência
   const colunas = useMemo(
-    () => [{ accessorKey: 'titulo' }, { accessorKey: 'status' }],
+    () => [{ accessorKey: 'titulo' }, { accessorKey: 'status' }, { accessorKey: 'id_pesquisa' }],
     [],
   );
 
-  // 1. Inicializamos a TanStack Table de maneira estável e memorizada
+  // Inicializamos a TanStack Table de maneira estável
   const table = useReactTable({
     data: bancoLocal,
     columns: colunas,
     getCoreRowModel: getCoreRowModel(),
   });
 
-  // filtragem no search bar
+  // filtragem do searchbar
   const pesquisasFiltradas = useMemo(() => {
     return bancoLocal.filter((pesquisa) => {
-      // Validação 1: Busca por Texto
+      // 1. Captura e padroniza os campos para minúsculo
       const titulo = (pesquisa.titulo || '').toLowerCase();
-      const bateTexto = titulo.includes(busca.toLowerCase());
+      const registro = String(pesquisa.id_pesquisa || '').toLowerCase(); 
+      const termoBusca = busca.toLowerCase();
 
-      // Validação 2: Filtro por Aba de Status
+      // verificando titulo e nº de registro
+      const bateTexto = titulo.includes(termoBusca) || registro.includes(termoBusca);
+
+      // filtro por Aba de Status
       let bateStatus = false;
       if (filtroStatus === 'todas') {
         bateStatus = true;
@@ -88,7 +92,6 @@ export default function DashboardPesquisa() {
     <div className="flex flex-col w-full mx-auto h-screen bg-slate-50">
       {/* cabeçalho */}
       <div className="w-full flex flex-col h-auto min-h-[30vh] lg:h-1/3 bg-indigo-500 shrink-0">
-        {/* logo e nav */}
         <div className="w-full flex items-center justify-between h-auto min-h-[50px] lg:h-[62px] bg-indigo-700 p-3 md:p-4 gap-2 md:gap-4">
           <div className="flex items-center ml-2 md:ml-4 gap-2">
             <img src={logotipo} alt="logotipo da NextPoint" />
@@ -103,7 +106,7 @@ export default function DashboardPesquisa() {
             </button>
           </div>
         </div>
-        {/* conteúdo do cabeçalho */}
+        
         <div className="w-full flex flex-col md:flex-row items-start md:items-center justify-between p-4 md:p-6 lg:p-10 gap-4 md:gap-6">
           <div className="flex flex-col text-sm md:text-base/15 gap-1 md:gap-2">
             <h1 className="text-gray-100 font-medium text-2xl md:text-3xl lg:text-4xl">
@@ -113,7 +116,6 @@ export default function DashboardPesquisa() {
               Gerencie e acompanhe o desempenho de seus formulários
             </p>
           </div>
-          {/* botão add nova pesquisa */}
           <button
             onClick={() => navigate('/Formulario')}
             type="button"
@@ -130,11 +132,9 @@ export default function DashboardPesquisa() {
       <div className="flex-grow overflow-y-auto w-full max-w-6xl mx-auto px-3 md:px-6 lg:px-8 py-4 md:py-6 lg:py-6 flex flex-col gap-6 md:gap-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between w-full gap-4 md:gap-6">
           <div className="w-full md:w-auto overflow-x-auto">
-            {/* Passando o estado do filtro para o componente filho */}
             <Status filtroAtual={filtroStatus} setFiltro={setFiltroStatus} />
           </div>
           <div className="w-full md:w-auto md:min-w-[250px]">
-            {/* Passando o estado da busca para a barra de pesquisa */}
             <SearchBar busca={busca} setBusca={setBusca} />
           </div>
         </div>
@@ -153,7 +153,7 @@ export default function DashboardPesquisa() {
             ))
           ) : (
             <div className="text-center col-span-full py-12 text-slate-400 font-medium text-sm">
-              Nenhum formulário encontrado para os filtros selecionados.
+              Nenhum formulário encontrado para os critérios digitados.
             </div>
           )}
         </div>
