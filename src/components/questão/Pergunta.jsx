@@ -193,7 +193,7 @@ export default function Pergunta({
                   atualizarPergunta(dados.id, 'opcoes', novasOpcoes);
                 }}
                 className="flex-grow bg-transparent border-b border-transparent hover:border-slate-200 focus:border-[#4F46E5] text-slate-800 font-normal text-sm py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px]"
-                placeholder={`Opção ${indexOpcao + 1}`}
+                placeholder={`Resposta ${indexOpcao + 1}`}
               />
             </div>
           ))}
@@ -205,7 +205,7 @@ export default function Pergunta({
             className="max-w-fit flex items-center gap-2 text-slate-500 hover:text-[#4F46E5] font-medium text-sm py-1 transition-colors group"
           >
             <Plus className="size-4 md:size-5 text-slate-400 group-hover:text-[#4F46E5] transition-colors" />
-            <span>Adicionar opção</span>
+            <span>Adicionar Resposta</span>
           </button>
         </div>
       )}
