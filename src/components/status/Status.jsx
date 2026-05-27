@@ -1,4 +1,3 @@
-// src/components/status/Status.jsx
 import React from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
 import { status } from '../../utils/dados';

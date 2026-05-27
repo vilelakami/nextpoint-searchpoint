@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// importação dos ícones
 import {
   ImageDown,
   CircleDot,
@@ -8,6 +9,7 @@ import {
   Trash2,
 } from 'lucide-react';
 
+// importação dos dados
 import { ajustarAltura } from '../../utils/dados';
 
 export default function Pergunta({
@@ -23,12 +25,12 @@ export default function Pergunta({
       {/* Linha do Topo: Inputs na esquerda, Ações na direita */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 w-full">
         
-        {/* BLOCO DA ESQUERDA: Título e Descrição (Removido o max-w-2xl para permitir que os filhos expandam) */}
+        {/* titulo e descricao da pergunta */}
         <div className="flex flex-col gap-2 flex-grow w-full">
           
           {/* Textarea de Título auto-expansível */}
           <div className="flex items-start gap-2 group border-b border-transparent hover:border-slate-100 focus-within:border-indigo-500 transition-colors relative w-full">
-            {/* 💡 FUNCIONALIDADE 2: Asterisco Vermelho se for Obrigatória */}
+            {/* se a questão for "obrigatória" adiciona um * vermelho */}
             {dados.obrigatoria && (
               <span className="ml-1 mt-1 text-red-500 font-bold text-lg select-none absolute -left-4 top-1">
                 *
@@ -50,7 +52,7 @@ export default function Pergunta({
             <button
               type="button"
               onMouseDown={(e) => {
-                e.preventDefault(); // Evita que o onBlur trave o input antes do clique fechar o estado
+                e.preventDefault(); 
                 setEditandoCabecalho(!editandoCabecalho);
               }}
             >
@@ -58,7 +60,7 @@ export default function Pergunta({
             </button>
           </div>
 
-          {/* Textarea de Descrição - Ajustada com w-full e flex-1 para esticar de ponta a ponta na linha */}
+          {/* descrição */}
           <div className="flex items-start gap-2 group border-b border-transparent hover:border-slate-100 focus-within:border-indigo-500 transition-colors w-full">
             <textarea
               value={dados.descricao}
@@ -67,7 +69,6 @@ export default function Pergunta({
               }
               rows={1}
               onInput={ajustarAltura}
-              // 💡 w-full e flex-1 garantem que ela preencha todo o espaço até o botão do lápis na direita
               className="w-full flex-1 bg-transparent placeholder:text-slate-400 text-slate-600 font-normal text-sm py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px]"
               placeholder="Descrição"
               disabled={!editandoCabecalho}
@@ -87,9 +88,9 @@ export default function Pergunta({
           </div>
         </div>
 
-        {/* BLOCO DA DIREITA: Ícone de imagem, Select, Toggle e Lixeira */}
+        {/* imagem, toggle de obrigatoria, tipo da pergunta e lixeira */}
         <div className="flex items-center justify-end gap-3 md:gap-4 shrink-0 lg:mt-1">
-          {/* 💡 FUNCIONALIDADE 1: Botão/Input de Upload de Imagem */}
+          {/* btn add imagem */}
           <label className="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer">
             <ImageDown className="size-5" />
             <input
@@ -139,7 +140,7 @@ export default function Pergunta({
             </label>
           </div>
 
-          {/* 💡 FUNCIONALIDADE 3: Botão de Lixeira para Deletar a Questão */}
+          {/* btn de excluir bloco de pergunta */}
           <button
             type="button"
             onClick={() => onExcluirPergunta(dados.id)}
@@ -151,7 +152,7 @@ export default function Pergunta({
         </div>
       </div>
 
-      {/* 💡 FUNCIONALIDADE 1 VISUAL: Exibição da Imagem após o Título/Descrição */}
+      {/* exibindo a img dps da descficao e do titulo */}
       {dados.imagem && (
         <div className="relative my-2 max-w-md rounded-lg overflow-hidden border border-slate-200 group self-start">
           <img
@@ -170,7 +171,7 @@ export default function Pergunta({
         </div>
       )}
 
-      {/* Condicional: Conteúdo da Múltipla Escolha */}
+      {/* condicional, se for multipla escolha aparece as opções, se nao, o textarea */}
       {dados.tipo === 'multipla_escolha' && (
         <div className="flex flex-col gap-3 mt-2 pl-1 animate-in fade-in duration-150 w-full">
           {dados.opcoes.map((opcao, indexOpcao) => (
@@ -198,7 +199,7 @@ export default function Pergunta({
             </div>
           ))}
 
-          {/* Botão Adicionar Opção */}
+          {/* btn add opção */}
           <button
             type="button"
             onClick={() => adicionarOpcao(dados.id)}
@@ -210,7 +211,7 @@ export default function Pergunta({
         </div>
       )}
 
-      {/* Condicional: Campo de resposta para Texto */}
+      {/* add textarea */}
       {dados.tipo === 'texto' && (
         <div className="mt-2 animate-in fade-in duration-150 w-full">
           <input

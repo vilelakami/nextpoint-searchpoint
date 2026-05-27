@@ -71,7 +71,7 @@ export default function CardForm({ pesquisa, onClick, onExcluir, onAlternarPausa
               {pesquisa.titulo || 'Sem título'}
             </h3>
 
-            {/* Botão de 3 pontinhos */}
+            {/* btn de 3 pontinhos */}
             <button
               ref={buttonRef}
               type="button"

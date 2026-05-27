@@ -7,7 +7,7 @@ export default function Footer({ onAdicionarPergunta, onAdicionarTitulo, onAdici
   return (
     <div className="flex items-center justify-between sm:justify-start gap-3 md:gap-4 lg:gap-5 bg-slate-900 w-[calc(100%-2rem)] sm:w-fit py-2.5 md:py-3 px-4 sm:px-5 lg:px-6 rounded-2xl fixed bottom-8 md:bottom-8 left-1/2 -translate-x-1/2 z-50 shadow-xl border border-slate-800">
       
-      {/* Botão Pergunta */}
+      {/* btn pergunta */}
       <button
         type="button"
         onClick={onAdicionarPergunta}
@@ -18,7 +18,7 @@ export default function Footer({ onAdicionarPergunta, onAdicionarTitulo, onAdici
         <span className="sm:hidden text-sm font-bold">Pergunta</span> 
       </button>
 
-      {/* Botão Título */}
+      {/* btn titulo */}
       <button
         type="button"
         onClick={onAdicionarTitulo}
@@ -29,7 +29,7 @@ export default function Footer({ onAdicionarPergunta, onAdicionarTitulo, onAdici
         <span className="sm:hidden text-sm font-bold">Título</span> 
       </button>
 
-      {/* Botão Mídia (Aciona o input de arquivo oculto) */}
+      {/* btn midia */}
       <button 
         type="button"
         onClick={() => inputMidiaRef.current?.click()}

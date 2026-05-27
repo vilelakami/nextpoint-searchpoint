@@ -5,6 +5,7 @@ export default function DadosPessoais() {
     <div>
       <div className="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-lg border border-slate-200">
         <table className="w-full text-sm text-center rtl:text-right text-body">
+         {/* adicionando colunas */}
           <thead className="text-sm text-body bg-neutral-secondary-soft">
             <tr>
               <th scope="col" className="px-6 py-3 font-medium">
@@ -21,9 +22,10 @@ export default function DadosPessoais() {
               </th>
             </tr>
           </thead>
+          {/* adicionando as linhas com os campos */}
           <tbody>
             <tr className="bg-white">
-              {/* Campo Nome */}
+              {/* nome */}
               <td className="px-6 py-4">
                 <input 
                   type="text" 
@@ -33,7 +35,7 @@ export default function DadosPessoais() {
                 />
               </td>
 
-              {/* Campo Idade */}
+              {/* idade */}
               <td className="px-6 py-4">
                 <input 
                   type="number" 
@@ -43,7 +45,7 @@ export default function DadosPessoais() {
                 />
               </td>
 
-              {/* Campo Sexo */}
+              {/* sexo */}
               <td className="px-6 py-4">
                 <select 
                   name="sexo"
@@ -56,7 +58,7 @@ export default function DadosPessoais() {
                 </select>
               </td>
 
-              {/* Campo Escolaridade */}
+              {/* escolaridade */}
               <td className="px-6 py-4">
                 <select 
                   name="escolaridade"

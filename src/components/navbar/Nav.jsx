@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 export default function Navbar() {
   return (
     <nav className="px-2 md:px-6 py-3 md:py-4 flex justify-center items-center">
-      {/* Container dos links com espaçamento responsivo */}
+      {/* links da navbar */}
       <div className="flex items-center gap-4 md:gap-8 lg:gap-12 text-xs md:text-sm lg:text-base font-medium">
         <NavLink
           to="/Dashboard"
