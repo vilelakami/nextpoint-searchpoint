@@ -1,51 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-// importando ícones
 import { ArrowLeft, Pencil, Trash2 } from 'lucide-react';
-// importando páginas
+
+// Importação do serviço unificado
+import { pesquisaService } from '../pages/services/PesquisaService';
+
+// Importação de Subcomponentes de UI
 import Pergunta from '../components/questão/Pergunta';
 import Footer from '../components/footer/Footer';
 import DadosPessoais from '../components/dados-pessoais/DadosPessoais';
 import ConfiguracaoPergunta from '../components/informações/ConfiguracaoPergunta';
-// importação dos dados
 import { ajustarAltura } from '../utils/dados';
 
 export default function Formulario() {
+  const { id } = useParams();
   const navigate = useNavigate();
+
   const [editandoCabecalho, setEditandoCabecalho] = useState(false);
-  
-  // guarda o ID do bloco que está sendo editado no momento
   const [idBlocoEditando, setIdBlocoEditando] = useState(null);
 
-  const [dadosFormulario, setDadosFormulario] = useState({
-    id_pesquisa: '',
-    titulo: '',
-    descricao: '',
-    nome_entrevistado: '',
-    idade_entrevistado: '',
-    sexo_entrevistado: '',
-    escolaridade_entrevistado: '',
-    status: 'rascunho',
-    perguntas: [
-      {
-        id: Date.now().toString(),
-        tipo_bloco: 'pergunta',
-        titulo: '',
-        descricao: '',
-        tipo: 'multipla_escolha',
-        obrigatoria: false,
-        imagem: null,
-        opcoes: [''],
-      },
-    ],
-  });
+  // inicializando os dados de forma automatica (com função)
+  const [dadosFormulario, setDadosFormulario] = useState(() =>
+    pesquisaService.gerarFormularioVazio(),
+  );
 
-  const { id } = useParams();
-
+  // Efeito para carregar dados caso seja uma edição de formulário existente
   useEffect(() => {
     if (id) {
-      const pesquisasSalvas = JSON.parse(localStorage.getItem('pesquisas')) || [];
-      const pesquisaEncontrada = pesquisasSalvas.find((p) => p.id_pesquisa === id);
+      const pesquisaEncontrada = pesquisaService.buscarPorId(id);
       if (pesquisaEncontrada) {
         setDadosFormulario(pesquisaEncontrada);
       }
@@ -57,38 +39,32 @@ export default function Formulario() {
     setDadosFormulario({ ...dadosFormulario, [name]: value });
   };
 
-  const atualizarPergunta = (id, campo, novoValor) => {
-    setDadosFormulario({
-      ...dadosFormulario,
-      perguntas: dadosFormulario.perguntas.map((pergunta) => {
-        if (pergunta.id === id) {
-          return { ...pergunta, [campo]: novoValor };
-        }
-        return pergunta;
-      }),
-    });
+  const atualizarPergunta = (idPergunta, campo, novoValor) => {
+    setDadosFormulario((prev) => ({
+      ...prev,
+      perguntas: prev.perguntas.map((p) =>
+        p.id === idPergunta ? { ...p, [campo]: novoValor } : p,
+      ),
+    }));
   };
 
   const onAdicionarOpcao = (perguntaId) => {
-    setDadosFormulario({
-      ...dadosFormulario,
-      perguntas: dadosFormulario.perguntas.map((perg) => {
-        if (perg.id === perguntaId) {
-          return { ...perg, opcoes: [...perg.opcoes, ''] };
-        }
-        return perg;
-      }),
-    });
+    setDadosFormulario((prev) => ({
+      ...prev,
+      perguntas: prev.perguntas.map((p) =>
+        p.id === perguntaId ? { ...p, opcoes: [...p.opcoes, ''] } : p,
+      ),
+    }));
   };
 
   const onExcluirPergunta = (idPergunta) => {
-    setDadosFormulario({
-      ...dadosFormulario,
-      perguntas: dadosFormulario.perguntas.filter((perg) => perg.id !== idPergunta),
-    });
+    setDadosFormulario((prev) => ({
+      ...prev,
+      perguntas: prev.perguntas.filter((p) => p.id !== idPergunta),
+    }));
   };
 
-  // ações do footer
+  // Funções disparadas pelo painel inferior (Footer)
   const adicionarNovaPergunta = () => {
     const novaQuestao = {
       id: Date.now().toString(),
@@ -100,10 +76,10 @@ export default function Formulario() {
       imagem: null,
       opcoes: [''],
     };
-    setDadosFormulario({
-      ...dadosFormulario,
-      perguntas: [...dadosFormulario.perguntas, novaQuestao],
-    });
+    setDadosFormulario((prev) => ({
+      ...prev,
+      perguntas: [...prev.perguntas, novaQuestao],
+    }));
   };
 
   const adicionarNovoTitulo = () => {
@@ -113,10 +89,10 @@ export default function Formulario() {
       titulo: '',
       descricao: '',
     };
-    setDadosFormulario({
-      ...dadosFormulario,
-      perguntas: [...dadosFormulario.perguntas, novoBlocoTitulo],
-    });
+    setDadosFormulario((prev) => ({
+      ...prev,
+      perguntas: [...prev.perguntas, novoBlocoTitulo],
+    }));
   };
 
   const adicionarNovaMidia = (arquivoImagem) => {
@@ -126,30 +102,26 @@ export default function Formulario() {
       titulo: '',
       imagem: arquivoImagem,
     };
-    setDadosFormulario({
-      ...dadosFormulario,
-      perguntas: [...dadosFormulario.perguntas, novoBlocoMidia],
-    });
+    setDadosFormulario((prev) => ({
+      ...prev,
+      perguntas: [...prev.perguntas, novoBlocoMidia],
+    }));
   };
 
-  // enviar forms
+  // Envio e persistência local através do Service
   const handleEnviar = (e) => {
     e.preventDefault();
-    const lista = JSON.parse(localStorage.getItem('pesquisas')) || [];
-    const novoForms = {
-      ...dadosFormulario,
-      id_pesquisa: dadosFormulario.id_pesquisa || Date.now().toString(),
-      status: 'rascunho',
-    };
-    localStorage.setItem('pesquisas', JSON.stringify([...lista, novoForms]));
-    alert('Formulário enviado com sucesso!');
-    navigate('/');
+    const sucesso = pesquisaService.salvarFormularioCompleto(dadosFormulario);
+    if (sucesso) {
+      alert('Formulário salvo localmente com sucesso!');
+      navigate('/Dashboard');
+    }
   };
 
   return (
     <div className="flex flex-col w-full mx-auto h-screen font-montserrat">
       <div className="relative w-full flex flex-col h-auto min-h-[28vh] lg:h-[33vh] bg-indigo-500">
-        {/* Cabeçalho */}
+        {/* Cabeçalho da Página */}
         <div className="w-full flex items-center justify-between h-auto min-h-[50px] lg:h-[62px] bg-indigo-700 p-3 md:p-4 gap-2 md:gap-4">
           <button
             onClick={() => navigate('/dashboard')}
@@ -177,15 +149,15 @@ export default function Formulario() {
             </button>
           </div>
         </div>
+
         <ConfiguracaoPergunta />
 
-        {/* Formulário */}
+        {/* Corpo do Editor de Formulários */}
         <div className="w-full max-w-4xl mx-auto px-3 md:px-4 lg:px-8 pb-32 flex-grow flex flex-col">
           <div className="w-full bg-gray-100 rounded-lg md:rounded-xl shadow-lg border border-slate-200/60 min-h-[400px] md:min-h-[500px] mt-3 md:mt-5 relative z-10 flex flex-col">
             <div className="p-4 md:p-6 lg:p-8 flex flex-col gap-4 md:gap-6 overflow-y-auto">
-              
+              {/* Box de Edição de Informações Base da Pesquisa */}
               <div className="flex flex-col gap-3">
-                {/* Título Principal Auto-Expansível */}
                 <div className="flex items-start justify-between gap-4 border-b border-transparent hover:border-slate-200/60 focus-within:border-indigo-500 transition-colors group">
                   <textarea
                     name="titulo"
@@ -194,23 +166,19 @@ export default function Formulario() {
                     rows={1}
                     onInput={ajustarAltura}
                     className="flex-grow bg-transparent placeholder:text-black text-black font-semibold text-3xl md:text-4xl py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[44px] md:min-h-[52px]"
-                    placeholder="Formulário"
+                    placeholder="Formulário sem título"
                     disabled={!editandoCabecalho}
                     onBlur={() => setEditandoCabecalho(false)}
                   />
                   <button
                     type="button"
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      setEditandoCabecalho(!editandoCabecalho);
-                    }}
+                    onClick={() => setEditandoCabecalho(!editandoCabecalho)}
                     className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-2 md:mt-3"
                   >
                     <Pencil className="w-4 h-4 md:size-5" />
                   </button>
                 </div>
 
-                {/* Descrição Principal Auto-Expansível */}
                 <div className="flex items-start justify-between gap-4 border-b border-transparent hover:border-slate-200/60 focus-within:border-indigo-500 transition-colors group">
                   <textarea
                     name="descricao"
@@ -219,24 +187,21 @@ export default function Formulario() {
                     rows={1}
                     onInput={ajustarAltura}
                     className="flex-grow bg-transparent placeholder:text-slate-500 text-slate-600 font-normal text-sm md:text-base py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px] md:min-h-[32px]"
-                    placeholder="Descrição"
+                    placeholder="Descrição do formulário"
                     disabled={!editandoCabecalho}
                     onBlur={() => setEditandoCabecalho(false)}
                   />
                   <button
                     type="button"
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      setEditandoCabecalho(!editandoCabecalho);
-                    }}
+                    onClick={() => setEditandoCabecalho(!editandoCabecalho)}
                     className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-1.5"
                   >
-                    <Pencil className="w-3 h-3 md:size-4 lg:size-5" />
+                    <Pencil className="w-3 h-3 md:size-4" />
                   </button>
                 </div>
               </div>
 
-              {/* ID da pesquisa */}
+              {/* Registro do ID */}
               <div className="flex items-center border-b border-transparent hover:border-slate-200/60 focus-within:border-indigo-500 transition-colors group w-fit">
                 <textarea
                   name="id_pesquisa"
@@ -251,21 +216,21 @@ export default function Formulario() {
                 />
                 <button
                   type="button"
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    setEditandoCabecalho(!editandoCabecalho);
-                  }}
+                  onClick={() => setEditandoCabecalho(!editandoCabecalho)}
                   className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-1"
                 >
-                  <Pencil className="w-2 h-2 md:size-3 lg:size-4" />
+                  <Pencil className="w-2 h-2 md:size-3" />
                 </button>
               </div>
+
               <hr className="border-slate-200/40" />
               <DadosPessoais />
-              
-              {/* fazendo o footer adicionar os blocos na tela */}
+
+              {/* Loop Dinâmico dos Blocos da Pesquisa */}
               {dadosFormulario.perguntas.map((item, index) => {
-                // bloco de pergunta
+                const estaEditando = idBlocoEditando === item.id;
+
+                // 1. Bloco de Perguntas Padrão
                 if (!item.tipo_bloco || item.tipo_bloco === 'pergunta') {
                   return (
                     <Pergunta
@@ -278,17 +243,20 @@ export default function Formulario() {
                   );
                 }
 
-                // bloco de titulo (apenas titulo)
+                // Bloco Exclusivo de Título de Seção
                 if (item.tipo_bloco === 'titulo_bloco') {
-                  const estaEditando = idBlocoEditando === item.id;
                   return (
-                    <div key={item.id} className="bg-white p-6 rounded-xl flex flex-col gap-3 shadow-sm border-l-4 border-indigo-500 relative group font-montserrat w-full">
-                      {/* input titulo */}
+                    <div
+                      key={item.id}
+                      className="bg-white p-6 rounded-xl flex flex-col gap-3 shadow-sm border-l-4 border-indigo-500 relative group w-full"
+                    >
                       <div className="flex items-start justify-between gap-4 border-b border-transparent hover:border-slate-100 focus-within:border-indigo-500 transition-colors w-full">
-                        <input 
+                        <input
                           type="text"
                           value={item.titulo}
-                          onChange={(e) => atualizarPergunta(item.id, 'titulo', e.target.value)}
+                          onChange={(e) =>
+                            atualizarPergunta(item.id, 'titulo', e.target.value)
+                          }
                           placeholder="Título da seção"
                           className="w-full bg-transparent font-semibold text-xl text-slate-800 outline-none py-1"
                           disabled={!estaEditando}
@@ -296,20 +264,24 @@ export default function Formulario() {
                         />
                         <button
                           type="button"
-                          onMouseDown={(e) => {
-                            e.preventDefault();
-                            setIdBlocoEditando(estaEditando ? null : item.id);
-                          }}
+                          onClick={() =>
+                            setIdBlocoEditando(estaEditando ? null : item.id)
+                          }
                           className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-1"
                         >
                           <Pencil className="mr-3 size-4" />
                         </button>
                       </div>
-                      {/* input da descricao */}
                       <div className="flex items-start gap-2 border-b border-transparent hover:border-slate-100 focus-within:border-indigo-500 transition-colors w-full">
                         <textarea
                           value={item.descricao}
-                          onChange={(e) => atualizarPergunta(item.id, 'descricao', e.target.value)}
+                          onChange={(e) =>
+                            atualizarPergunta(
+                              item.id,
+                              'descricao',
+                              e.target.value,
+                            )
+                          }
                           placeholder="Descrição da seção (opcional)"
                           rows={1}
                           onInput={ajustarAltura}
@@ -318,13 +290,11 @@ export default function Formulario() {
                           onBlur={() => setIdBlocoEditando(null)}
                         />
                       </div>
-                      {/* lixeira */}
                       <div className="flex items-center justify-end w-full pt-2 border-t border-slate-50">
-                        <button 
+                        <button
                           type="button"
                           onClick={() => onExcluirPergunta(item.id)}
                           className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Excluir seção"
                         >
                           <Trash2 className="size-5" />
                         </button>
@@ -333,17 +303,20 @@ export default function Formulario() {
                   );
                 }
 
-                // bloco de adicionar midia/imagem
+                // Bloco Exclusivo de Mídia / Imagem
                 if (item.tipo_bloco === 'midia') {
-                  const estaEditando = idBlocoEditando === item.id;
                   return (
-                    <div key={item.id} className="bg-white p-6 rounded-xl flex flex-col gap-3 shadow-sm border-l-4 border-indigo-500 relative group font-montserrat w-full">
-                      {/* input da midia (legenda alternativa) */}
+                    <div
+                      key={item.id}
+                      className="bg-white p-6 rounded-xl flex flex-col gap-3 shadow-sm border-l-4 border-indigo-500 relative group w-full"
+                    >
                       <div className="flex items-start justify-between gap-4 border-b border-transparent hover:border-slate-100 focus-within:border-indigo-500 transition-colors w-full">
-                        <input 
+                        <input
                           type="text"
                           value={item.titulo}
-                          onChange={(e) => atualizarPergunta(item.id, 'titulo', e.target.value)}
+                          onChange={(e) =>
+                            atualizarPergunta(item.id, 'titulo', e.target.value)
+                          }
                           placeholder="Título da imagem (opcional)"
                           className="w-full bg-transparent font-medium text-base text-slate-700 outline-none py-1"
                           disabled={!estaEditando}
@@ -351,28 +324,33 @@ export default function Formulario() {
                         />
                         <button
                           type="button"
-                          onMouseDown={(e) => {
-                            e.preventDefault();
-                            setIdBlocoEditando(estaEditando ? null : item.id);
-                          }}
+                          onClick={() =>
+                            setIdBlocoEditando(estaEditando ? null : item.id)
+                          }
                           className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-1"
                         >
                           <Pencil className="mr-3 size-4" />
                         </button>
                       </div>
-                      {/* exoboção da img */}
                       {item.imagem && (
                         <div className="max-w-md overflow-hidden rounded-lg border border-slate-200 mt-1 self-start">
-                          <img src={URL.createObjectURL(item.imagem)} alt="Mídia do forms" className="w-full h-auto object-cover max-h-64" />
+                          <img
+                            src={
+                              item.imagem instanceof Blob ||
+                              item.imagem instanceof File
+                                ? URL.createObjectURL(item.imagem)
+                                : item.imagem
+                            }
+                            alt="Mídia do formulário"
+                            className="w-full h-auto object-cover max-h-64"
+                          />
                         </div>
                       )}
-                      {/* lixeira */}
                       <div className="flex items-center justify-end w-full pt-2 border-t border-slate-50">
-                        <button 
+                        <button
                           type="button"
                           onClick={() => onExcluirPergunta(item.id)}
                           className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Excluir mídia"
                         >
                           <Trash2 className="size-5" />
                         </button>
@@ -387,8 +365,8 @@ export default function Formulario() {
           </div>
         </div>
       </div>
-      
-      <Footer 
+
+      <Footer
         onAdicionarPergunta={adicionarNovaPergunta}
         onAdicionarTitulo={adicionarNovoTitulo}
         onAdicionarMidia={adicionarNovaMidia}

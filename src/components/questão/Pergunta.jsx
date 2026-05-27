@@ -24,10 +24,8 @@ export default function Pergunta({
     <div className="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm font-montserrat relative w-full">
       {/* Linha do Topo: Inputs na esquerda, Ações na direita */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 w-full">
-        
         {/* titulo e descricao da pergunta */}
         <div className="flex flex-col gap-2 flex-grow w-full">
-          
           {/* Textarea de Título auto-expansível */}
           <div className="flex items-start gap-2 group border-b border-transparent hover:border-slate-100 focus-within:border-indigo-500 transition-colors relative w-full">
             {/* se a questão for "obrigatória" adiciona um * vermelho */}
@@ -52,7 +50,7 @@ export default function Pergunta({
             <button
               type="button"
               onMouseDown={(e) => {
-                e.preventDefault(); 
+                e.preventDefault();
                 setEditandoCabecalho(!editandoCabecalho);
               }}
             >
@@ -154,20 +152,21 @@ export default function Pergunta({
 
       {/* exibindo a img dps da descficao e do titulo */}
       {dados.imagem && (
-        <div className="relative my-2 max-w-md rounded-lg overflow-hidden border border-slate-200 group self-start">
+        <div className="max-w-md overflow-hidden rounded-lg border border-slate-200 mt-2 self-start">
           <img
-            src={URL.createObjectURL(dados.imagem)}
-            alt="Upload da pergunta"
+            src={
+              dados.imagem instanceof Blob || dados.imagem instanceof File
+                ? URL.createObjectURL(dados.imagem)
+                : typeof dados.imagem === 'string'
+                  ? dados.imagem
+                  : ''
+            }
+            alt="Mídia da pergunta"
             className="w-full h-auto object-cover max-h-64"
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
           />
-          <button
-            type="button"
-            onClick={() => atualizarPergunta(dados.id, 'imagem', null)}
-            className="absolute top-2 right-2 bg-black/70 hover:bg-black text-white p-1.5 rounded-full transition-colors"
-            title="Remover imagem"
-          >
-            <Trash className="size-4" />
-          </button>
         </div>
       )}
 

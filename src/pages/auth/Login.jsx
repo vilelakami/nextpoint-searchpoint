@@ -6,7 +6,7 @@ import { User, Lock, LogIn } from 'lucide-react';
 
 function Login() {
   const navigate = useNavigate();
-  
+
   // dados de login
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -21,43 +21,45 @@ function Login() {
     }
 
     // usuarios (exemplo)
-    const usuariosCadastrados = JSON.parse(localStorage.getItem('usuarios')) || [
+    const usuariosCadastrados = JSON.parse(
+      localStorage.getItem('usuarios'),
+    ) || [
       {
         id: '1',
         nome: 'Regis Nogueira (Padrão)',
         email: 'regis@example.com',
-        cargo: 'Admin'
+        cargo: 'Admin',
       },
       {
         id: '2',
         nome: 'Matheus Taveira (Padrão)',
         email: 'matheus@example.com',
-        cargo: 'Pesquisador'
-      }
+        cargo: 'Pesquisador',
+      },
     ];
 
     // ve se existe o e-mail digitado
     const usuarioEncontrado = usuariosCadastrados.find(
-      (user) => user.email.toLowerCase() === email.trim().toLowerCase()
+      (user) => user.email.toLowerCase() === email.trim().toLowerCase(),
     );
 
     if (usuarioEncontrado) {
       // salva os dados do usuário na sessão ativa do navegador
       localStorage.setItem('usuarioLogado', JSON.stringify(usuarioEncontrado));
-      
+
       // manda para o Dashboard e verifica se a pessoa é pesquisador ou admin
       navigate('/Dashboard');
     } else {
-      alert('E-mail não cadastrado! Peça para um Administrador cadastrar você na aba "Gestão de Usuários".');
+      alert(
+        'E-mail não cadastrado! Peça para um Administrador cadastrar você na aba "Gestão de Usuários".',
+      );
     }
   }
 
   return (
     <div className="w-full min-h-screen bg-slate-50 flex items-center justify-center p-4 antialiased font-sans">
-      
       {/* container */}
       <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 min-h-[500px]">
-        
         {/* lado esq -> identidade visual */}
         <div className="bg-indigo-700 p-8 md:p-12 flex flex-col justify-center text-white select-none">
           <div className="w-max">
@@ -78,7 +80,6 @@ function Login() {
           </h2>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-5">
-            
             {/* email */}
             <div className="flex items-center gap-3 border border-gray-300 rounded-lg px-4 py-3 bg-white focus-within:border-indigo-600 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
               <User className="size-5 opacity-60" />
@@ -116,10 +117,8 @@ function Login() {
               <LogIn className="w-5 h-5 invert" />
               Entrar
             </button>
-
           </form>
         </div>
-
       </div>
     </div>
   );

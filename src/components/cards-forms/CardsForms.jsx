@@ -1,8 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom'; 
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 // importação dos ícones
-import { FileText, MoreVertical, Play, Trash2, FilePieChart, Pause, Eye } from 'lucide-react';
+import {
+  FileText,
+  MoreVertical,
+  Play,
+  Trash2,
+  FilePieChart,
+  Pause,
+  Eye,
+} from 'lucide-react';
 // importação dos dados (cores dos status)
 import { statusStyles } from '../../utils/dados';
 
@@ -16,7 +24,12 @@ const PALETA_CORES = [
   'bg-lime-500',
 ];
 
-export default function CardForm({ pesquisa, onClick, onExcluir, onAlternarPausa }) {
+export default function CardForm({
+  pesquisa,
+  onClick,
+  onExcluir,
+  onAlternarPausa,
+}) {
   const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
   const [coordenadas, setCoordenadas] = useState({ top: 0, left: 0 }); // Guarda a posição do clique
@@ -61,7 +74,9 @@ export default function CardForm({ pesquisa, onClick, onExcluir, onAlternarPausa
       className="bg-white rounded-lg md:rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col h-full cursor-pointer hover:shadow-md transition-shadow relative"
     >
       {/* navbar colorida */}
-      <div className={`h-20 md:h-24 lg:h-28 w-full ${corAleatoriaRef.current}`} />
+      <div
+        className={`h-20 md:h-24 lg:h-28 w-full ${corAleatoriaRef.current}`}
+      />
 
       {/* conteúdo do card */}
       <div className="p-3 md:p-4 lg:p-5 flex flex-col flex-grow justify-between gap-3 md:gap-4">
@@ -109,8 +124,8 @@ export default function CardForm({ pesquisa, onClick, onExcluir, onAlternarPausa
             {pesquisa?.status === 'em_pausa'
               ? 'Em Pausa'
               : pesquisa?.status === 'concluida'
-              ? 'Concluída'
-              : pesquisa?.status || 'Rascunho'}
+                ? 'Concluída'
+                : pesquisa?.status || 'Rascunho'}
           </span>
         </div>
       </div>
@@ -145,7 +160,9 @@ export default function CardForm({ pesquisa, onClick, onExcluir, onAlternarPausa
               <span>
                 {pesquisa.status === 'em_pausa' && 'Continuar pesquisa'}
                 {pesquisa.status === 'concluida' && 'Visualizar pesquisa'}
-                {pesquisa.status !== 'em_pausa' && pesquisa.status !== 'concluida' && 'Iniciar pesquisa'}
+                {pesquisa.status !== 'em_pausa' &&
+                  pesquisa.status !== 'concluida' &&
+                  'Iniciar pesquisa'}
               </span>
             </button>
 
@@ -162,7 +179,9 @@ export default function CardForm({ pesquisa, onClick, onExcluir, onAlternarPausa
               >
                 <Pause className="w-4 h-4 text-slate-500" />
                 <span>
-                  {pesquisa.status === 'em_pausa' ? 'Retomar pesquisa' : 'Pausar pesquisa'}
+                  {pesquisa.status === 'em_pausa'
+                    ? 'Retomar pesquisa'
+                    : 'Pausar pesquisa'}
                 </span>
               </button>
             )}

@@ -1,66 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-// importação dos ícones
+// ícones
 import { ArrowLeft } from 'lucide-react';
-// importando dados pessoais
-import DadosPessoais from '../components/dados-pessoais/DadosPessoais'; 
+
+// Importação do Serviço Isolado
+import { pesquisaService } from '../pages/services/PesquisaService';
+
+// Importação de componentes
+import DadosPessoais from '../components/dados-pessoais/DadosPessoais';
 
 export default function ResponderFormulario() {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  // guardando os dados da pesquisa que veio do localStorage
+
   const [pesquisa, setPesquisa] = useState(null);
-  
-  // salvando as respostas que o usuário vai marcar
   const [respostas, setRespostas] = useState({});
 
+  // Carrega os dados usando o Service ao montar o componente
   useEffect(() => {
     if (id) {
-      const pesquisasSalvas = JSON.parse(localStorage.getItem('pesquisas')) || [];
-      const achada = pesquisasSalvas.find(p => p.id_pesquisa === id);
+      const achada = pesquisaService.buscarPorId(id);
       if (achada) {
         setPesquisa(achada);
+        // Se a pesquisa já tinha respostas salvas de quando foi pausada, recupera-as aqui
+        if (achada.respostasSalvas) {
+          setRespostas(achada.respostasSalvas);
+        }
       }
     }
   }, [id]);
 
-  // salvando a resposta digitada ou selecionada 
+  // Atualiza o estado local das respostas à medida que o usuário interage
   const handleMudarResposta = (perguntaId, valor) => {
-    setRespostas({
-      ...respostas,
-      [perguntaId]: valor
-    });
+    setRespostas((prev) => ({
+      ...prev,
+      [perguntaId]: valor,
+    }));
   };
 
-  // salvando os tatus da pesquisa
-  const salvarProgressoPesquisa = (novoStatus, mensagemSucesso) => {
-    const pesquisasSalvas = JSON.parse(localStorage.getItem('pesquisas')) || [];
-    
-    // Atualizamos o status e as respostas dessa pesquisa específica dentro da nossa lista global
-    const listaAtualizada = pesquisasSalvas.map((p) => {
-      if (p.id_pesquisa === id) {
-        return { 
-          ...p, 
-          status: novoStatus,
-          respostasSalvas: respostas // Guardamos as respostas atuais para não perdê-las ao pausar
-        };
-      }
-      return p;
-    });
+  // Aciona a persistência delegando a lógica inteiramente para o Service
+  const handleSalvarProgresso = (novoStatus, mensagemSucesso) => {
+    const sucesso = pesquisaService.salvarProgresso(id, novoStatus, respostas);
 
-    localStorage.setItem('pesquisas', JSON.stringify(listaAtualizada));
-    alert(mensagemSucesso);
-    navigate('/Dashboard');
+    if (sucesso) {
+      alert(mensagemSucesso);
+      navigate('/Dashboard');
+    }
   };
 
   if (!pesquisa) {
-    return <div className="p-8 text-center">Carregando formulário...</div>;
+    return (
+      <div className="p-8 text-center text-slate-500 font-medium">
+        Carregando formulário...
+      </div>
+    );
   }
 
   return (
     <div className="flex flex-col w-full mx-auto h-screen font-montserrat bg-slate-50">
-      {/* Cabeçalho Limpo */}
+      {/* Cabeçalho */}
       <div className="w-full flex items-center justify-between h-[62px] bg-indigo-700 p-4 shrink-0">
         <button
           onClick={() => navigate('/Dashboard')}
@@ -71,20 +69,24 @@ export default function ResponderFormulario() {
           <span>Voltar ao Dashboard</span>
         </button>
 
-        <div className='flex items-center gap-5'>
+        <div className="flex items-center gap-5">
           <button
-            onClick={() => navigate('/Dashboard')} 
+            onClick={() => navigate('/Dashboard')}
             type="button"
             className="bg-transparent text-white hover:text-gray-200 font-medium text-xs md:text-sm px-2 md:px-3 py-1"
           >
             Cancelar
           </button>
 
-          {/* botão 'finalizar' que altera os status para 'concluida' */}
           <button
-            onClick={() => salvarProgressoPesquisa('concluida', 'Pesquisa finalizada com sucesso!')}
+            onClick={() =>
+              handleSalvarProgresso(
+                'concluida',
+                'Pesquisa finalizada com sucesso!',
+              )
+            }
             type="button"
-            className="bg-white text-indigo-700 hover:bg-gray-200 font-medium text-xs md:text-sm py-1 px-3 md:px-6 rounded"
+            className="bg-white text-indigo-700 hover:bg-gray-200 font-medium text-xs md:text-sm py-1 px-3 md:px-6 rounded transition-colors"
           >
             Finalizar
           </button>
@@ -93,8 +95,7 @@ export default function ResponderFormulario() {
 
       {/* Área do Formulário */}
       <div className="flex-grow overflow-y-auto w-full max-w-4xl mx-auto px-4 py-6 md:py-10">
-        
-        {/*título, descrição e nº de registro da pesquisa */}
+        {/* Título e Cabeçalho do Card */}
         <div className="w-full bg-white rounded-xl shadow-md border border-slate-200 p-6 md:p-8 flex flex-col gap-4 mb-6">
           <h1 className="text-3xl font-bold text-slate-900 break-words">
             {pesquisa.titulo || 'Formulário Sem Título'}
@@ -114,27 +115,36 @@ export default function ResponderFormulario() {
           <DadosPessoais />
         </div>
 
-        {/* Perguntas */}
+        {/* Listagem Dinâmica de Perguntas */}
         <div className="flex flex-col gap-6 pb-12">
           {pesquisa.perguntas?.map((pergunta, index) => (
-            <div key={pergunta.id || index} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-4">
-              
+            <div
+              key={pergunta.id || index}
+              className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-4"
+            >
               <div>
                 <h3 className="text-base md:text-lg font-bold text-slate-800 break-words">
                   {index + 1}. {pergunta.titulo || 'Pergunta sem enunciado'}
-                  {pergunta.obrigatoria && <span className="text-red-500 ml-1">*</span>}
+                  {pergunta.obrigatoria && (
+                    <span className="text-red-500 ml-1">*</span>
+                  )}
                 </h3>
                 {pergunta.descricao && (
-                  <p className="text-xs text-slate-500 mt-1 break-words">{pergunta.descricao}</p>
+                  <p className="text-xs text-slate-500 mt-1 break-words">
+                    {pergunta.descricao}
+                  </p>
                 )}
               </div>
 
+              {/* Renderização condicional por Tipo de Pergunta */}
               {pergunta.tipo === 'texto' ? (
                 <div className="mt-2">
                   <input
                     type="text"
                     value={respostas[pergunta.id] || ''}
-                    onChange={(e) => handleMudarResposta(pergunta.id, e.target.value)}
+                    onChange={(e) =>
+                      handleMudarResposta(pergunta.id, e.target.value)
+                    }
                     placeholder="Digite sua resposta aqui..."
                     className="w-full max-w-2xl border-b-2 border-slate-200 focus:border-indigo-500 text-sm py-2 bg-transparent text-slate-800 focus:outline-none transition-colors"
                   />
@@ -142,8 +152,8 @@ export default function ResponderFormulario() {
               ) : (
                 <div className="flex flex-col gap-3 mt-2 pl-1">
                   {pergunta.opcoes?.map((opcao, indexOpcao) => (
-                    <label 
-                      key={indexOpcao} 
+                    <label
+                      key={indexOpcao}
                       className="flex items-center gap-3 max-w-md w-full cursor-pointer group"
                     >
                       <input
@@ -163,7 +173,6 @@ export default function ResponderFormulario() {
             </div>
           ))}
         </div>
-
       </div>
     </div>
   );

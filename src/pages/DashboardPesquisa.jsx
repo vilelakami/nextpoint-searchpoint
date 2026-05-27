@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-// importação dos ícones
 import { Settings, Plus, LogOut } from 'lucide-react';
+
+// Importação do Serviço Centralizado
+import { pesquisaService } from '../pages/services/PesquisaService';
+
+// Importação de componentes visuais
 import logotipo from '../assets/icons/logotipo.svg';
-// importação das páginas
 import Nav from '../components/navbar/Nav';
 import Status from '../components/status/Status';
 import SearchBar from '../components/searchbar/SearchBar';
 import CardForm from '../components/cards-forms/CardsForms';
 
-// Importação dos componentes do TanStack Table
-import {
-  useReactTable,
-  getCoreRowModel,
-} from '@tanstack/react-table';
+// TanStack Table
+import { useReactTable, getCoreRowModel } from '@tanstack/react-table';
 
 export default function DashboardPesquisa() {
   const navigate = useNavigate();
@@ -21,76 +21,50 @@ export default function DashboardPesquisa() {
   const [busca, setBusca] = useState('');
   const [filtroStatus, setFiltroStatus] = useState('todas');
 
+  // Carrega as pesquisas via service ao iniciar a tela
   useEffect(() => {
-    const pesquisasSalvas = JSON.parse(localStorage.getItem('pesquisas')) || [];
-    setBancolocal(pesquisasSalvas);
+    setBancolocal(pesquisaService.buscarTodas());
   }, []);
 
-  // função pra mudar status
+  // Modifica o status mandando para o service
   const handleAlternarPausa = (idPesquisa, statusAtual) => {
-    const novoStatus = statusAtual === 'em_pausa' ? 'rascunho' : 'em_pausa';
-
-    const listaAtualizada = bancoLocal.map((pesquisa) => {
-      if (pesquisa.id_pesquisa === idPesquisa) {
-        return { ...pesquisa, status: novoStatus };
-      }
-      return pesquisa;
-    });
-
-    setBancolocal(listaAtualizada);
-    localStorage.setItem('pesquisas', JSON.stringify(listaAtualizada));
-  };
-
-  // função pra excluir pesquisa
-  const handleExcluirPesquisa = (idPesquisa) => {
-    const listaFiltrada = bancoLocal.filter(
-      (p) => p.id_pesquisa !== idPesquisa,
+    const listaAtualizada = pesquisaService.alternarPausa(
+      idPesquisa,
+      statusAtual,
     );
-    setBancolocal(listaFiltrada);
-    localStorage.setItem('pesquisas', JSON.stringify(listaFiltrada));
+    setBancolocal(listaAtualizada);
   };
 
-  // colunas que a biblioteca usará como referência
+  // Remove o registro mandando para o service
+  const handleExcluirPesquisa = (idPesquisa) => {
+    const listaAtualizada = pesquisaService.excluir(idPesquisa);
+    setBancolocal(listaAtualizada);
+  };
+
+  // Referência estável de colunas para o TanStack Table
   const colunas = useMemo(
-    () => [{ accessorKey: 'titulo' }, { accessorKey: 'status' }, { accessorKey: 'id_pesquisa' }],
+    () => [
+      { accessorKey: 'titulo' },
+      { accessorKey: 'status' },
+      { accessorKey: 'id_pesquisa' },
+    ],
     [],
   );
 
-  // Inicializamos a TanStack Table de maneira estável
   const table = useReactTable({
     data: bancoLocal,
     columns: colunas,
     getCoreRowModel: getCoreRowModel(),
   });
 
-  // filtragem do searchbar
+  // Filtra de forma performática a partir do arquivo service
   const pesquisasFiltradas = useMemo(() => {
-    return bancoLocal.filter((pesquisa) => {
-      // 1. Captura e padroniza os campos para minúsculo
-      const titulo = (pesquisa.titulo || '').toLowerCase();
-      const registro = String(pesquisa.id_pesquisa || '').toLowerCase(); 
-      const termoBusca = busca.toLowerCase();
-
-      // verificando titulo e nº de registro
-      const bateTexto = titulo.includes(termoBusca) || registro.includes(termoBusca);
-
-      // filtro por Aba de Status
-      let bateStatus = false;
-      if (filtroStatus === 'todas') {
-        bateStatus = true;
-      } else if (filtroStatus === 'em_andamento') {
-        bateStatus = pesquisa.status === 'ativa';
-      } else {
-        bateStatus = pesquisa.status === filtroStatus;
-      }
-
-      return bateTexto && bateStatus;
-    });
+    return pesquisaService.filtrarPesquisas(bancoLocal, busca, filtroStatus);
   }, [bancoLocal, busca, filtroStatus]);
 
   return (
     <div className="flex flex-col w-full mx-auto h-screen bg-slate-50">
-      {/* cabeçalho */}
+      {/* Cabeçalho Superior e Hero */}
       <div className="w-full flex flex-col h-auto min-h-[30vh] lg:h-1/3 bg-indigo-500 shrink-0">
         <div className="w-full flex items-center justify-between h-auto min-h-[50px] lg:h-[62px] bg-indigo-700 p-3 md:p-4 gap-2 md:gap-4">
           <div className="flex items-center ml-2 md:ml-4 gap-2">
@@ -100,18 +74,23 @@ export default function DashboardPesquisa() {
             </h2>
           </div>
           <Nav />
-          <div className="flex">
-            <button type="button" onClick={() => navigate('/Admin')}>
-              <Settings className="w-4 h-4 md:size-5 text-white mr-2 md:mr-4 shrink-0 hover:text-black" />
+          <div className="flex items-center">
+            <button
+              type="button"
+              onClick={() => navigate('/Admin')}
+              title="Configurações"
+            >
+              <Settings className="w-4 h-4 md:size-5 text-white mr-2 md:mr-4 shrink-0 hover:text-black transition-colors" />
             </button>
-            <button type="button" onClick={() => navigate('/')}>
-              <LogOut className='w-4 h-4 md:size-5 text-white mr-2 md:mr-4 shrink-0 hover:text-black'/>
-          </button>
+            <button type="button" onClick={() => navigate('/')} title="Sair">
+              <LogOut className="w-4 h-4 md:size-5 text-white mr-2 md:mr-4 shrink-0 hover:text-black transition-colors" />
+            </button>
           </div>
         </div>
-        
+
+        {/* Título da Seção e Botão Nova Pesquisa */}
         <div className="w-full flex flex-col md:flex-row items-start md:items-center justify-between p-4 md:p-6 lg:p-10 gap-4 md:gap-6">
-          <div className="flex flex-col text-sm md:text-base/15 gap-1 md:gap-2">
+          <div className="flex flex-col gap-1 md:gap-2">
             <h1 className="text-gray-100 font-medium text-2xl md:text-3xl lg:text-4xl">
               Pesquisas
             </h1>
@@ -122,7 +101,7 @@ export default function DashboardPesquisa() {
           <button
             onClick={() => navigate('/Formulario')}
             type="button"
-            className="flex items-center gap-2 bg-gray-200 hover:bg-white text-indigo-700 font-medium py-2 px-3 md:px-4 rounded text-sm md:text-base whitespace-nowrap"
+            className="flex items-center gap-2 bg-gray-200 hover:bg-white text-indigo-700 font-semibold py-2 px-3 md:px-4 rounded text-sm md:text-base whitespace-nowrap transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4 md:size-5 text-indigo-700 shrink-0" />
             <span className="hidden md:inline">Adicionar Pesquisa</span>
@@ -130,9 +109,9 @@ export default function DashboardPesquisa() {
           </button>
         </div>
       </div>
-      
-      {/* main */}
-      <div className="flex-grow overflow-y-auto w-full max-w-6xl mx-auto px-3 md:px-6 lg:px-8 py-4 md:py-6 lg:py-6 flex flex-col gap-6 md:gap-8">
+
+      {/* Área de Filtros e Grid Principal */}
+      <div className="flex-grow overflow-y-auto w-full max-w-6xl mx-auto px-3 md:px-6 lg:px-8 py-6 flex flex-col gap-6 md:gap-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between w-full gap-4 md:gap-6">
           <div className="w-full md:w-auto overflow-x-auto">
             <Status filtroAtual={filtroStatus} setFiltro={setFiltroStatus} />
@@ -142,7 +121,7 @@ export default function DashboardPesquisa() {
           </div>
         </div>
 
-        {/* Grid de Cards */}
+        {/* Renderização dos Cards Filtrados */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 lg:gap-6 pb-12">
           {pesquisasFiltradas.length > 0 ? (
             pesquisasFiltradas.map((pesquisa) => (
@@ -155,8 +134,8 @@ export default function DashboardPesquisa() {
               />
             ))
           ) : (
-            <div className="text-center col-span-full py-12 text-slate-400 font-medium text-sm">
-              Nenhum formulário encontrado para os critérios digitados.
+            <div className="text-center col-span-full py-16 text-slate-400 font-medium text-sm bg-white rounded-xl border border-dashed border-slate-300">
+              Nenhum formulário encontrado para os critérios filtrados.
             </div>
           )}
         </div>
