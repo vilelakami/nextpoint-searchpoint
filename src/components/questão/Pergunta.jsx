@@ -5,6 +5,7 @@ import { ajustarAltura } from '../../utils/dados';
 
 export default function Pergunta({ dados, atualizarPergunta, adicionarOpcao }) {
   const [tipoPergunta, setTipoPergunta] = useState('multipla_escolha');
+  const [editandoCabecalho, setEditandoCabecalho] = useState(false);
 
   return (
     <div className="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm font-montserrat">
@@ -23,8 +24,12 @@ export default function Pergunta({ dados, atualizarPergunta, adicionarOpcao }) {
               onInput={ajustarAltura} // Dispara a função toda vez que o usuário digitar ou quebrar linha
               className="flex-grow bg-transparent placeholder:text-black text-black font-semibold text-lg py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[36px]"
               placeholder="Título"
+              disabled={!editandoCabecalho}
+              onBlur={() => setEditandoCabecalho(false)}
             />
+            <button type='button' onClick={() => setEditandoCabecalho(!editandoCabecalho)}>
             <Pencil className="size-4 text-slate-400 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity mt-2" />
+            </button>
           </div>
 
           {/* Textarea de Descrição auto-expansível */}
@@ -38,8 +43,12 @@ export default function Pergunta({ dados, atualizarPergunta, adicionarOpcao }) {
               onInput={ajustarAltura} // Dispara a função aqui também
               className="flex-grow bg-transparent placeholder:text-slate-400 text-slate-600 font-normal text-sm py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px]"
               placeholder="Descrição"
+              disabled={!editandoCabecalho}
+              onBlur={() => setEditandoCabecalho(false)}
             />
+            <button type='button' onClick={() => setEditandoCabecalho(!editandoCabecalho)}>
             <Pencil className="size-4 text-slate-400 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity mt-1.5" />
+            </button>
           </div>
         </div>
 

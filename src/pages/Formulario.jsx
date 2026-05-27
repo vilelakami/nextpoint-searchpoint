@@ -12,6 +12,7 @@ import { ajustarAltura } from '../utils/dados';
 
 export default function Formulario() {
   const navigate = useNavigate();
+  const [editandoCabecalho, setEditandoCabecalho] = useState(false);
   const [dadosFormulario, setDadosFormulario] = useState({
     id: 'pergunta-inicial',
     titulo: '',
@@ -158,9 +159,12 @@ export default function Formulario() {
                     onInput={ajustarAltura}
                     className="flex-grow bg-transparent placeholder:text-black text-black font-semibold text-3xl md:text-4xl py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[44px] md:min-h-[52px]"
                     placeholder="Formulário"
+                    disabled={!editandoCabecalho}
+                    onBlur={() => setEditandoCabecalho(false)}
                   />
                   <button
                     type="button"
+                    onClick={() => setEditandoCabecalho(!editandoCabecalho)}
                     className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-2 md:mt-3"
                   >
                     <Pencil className="w-4 h-4 md:size-5" />
@@ -177,9 +181,12 @@ export default function Formulario() {
                     onInput={ajustarAltura}
                     className="flex-grow bg-transparent placeholder:text-slate-500 text-slate-600 font-normal text-sm md:text-base py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px] md:min-h-[32px]"
                     placeholder="Descrição"
+                    disabled={!editandoCabecalho}
+                    onBlur={() => setEditandoCabecalho(false)}
                   />
                   <button
                     type="button"
+                    onClick={() => setEditandoCabecalho(!editandoCabecalho)}
                     className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-1.5"
                   >
                     <Pencil className="w-3 h-3 md:size-4 lg:size-5" />
@@ -197,9 +204,12 @@ export default function Formulario() {
                   onInput={ajustarAltura}
                   className="w-40 bg-transparent placeholder:text-slate-500 text-slate-600 font-normal text-sm md:text-base py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px] md:min-h-[32px]"
                   placeholder="Nº de Registro"
+                  disabled={!editandoCabecalho}
+                  onBlur={() => setEditandoCabecalho(false)}
                 />
                 <button
                   type="button"
+                  onClick={() => setEditandoCabecalho(!editandoCabecalho)}
                   className="shrink-0 text-slate-400 group-hover:text-black transition-colors mt-1"
                 >
                   <Pencil className="w-2 h-2 md:size-3 lg:size-4" />
