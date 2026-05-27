@@ -25,7 +25,7 @@ export default function ModalUsuario({
           <X className="size-5" />
         </button>
         
-        {/* Título dinâmico baseado no modo (Criação ou Edição) */}
+        {/* Título dinâmico */}
         <h2 className="text-xl font-semibold text-slate-800 border-b border-slate-100 pb-3 mb-4 font-montserrat">
           {idEditando ? 'Editar Usuário' : 'Adicionar Novo Supervisor'}
         </h2>
@@ -36,7 +36,7 @@ export default function ModalUsuario({
             <label className="text-xs font-semibold text-slate-500 uppercase">Nome Completo</label>
             <input 
               type="text" 
-              value={novoUsuario.nome}
+              value={novoUsuario.nome || ''}
               onChange={(e) => setNovoUsuario({ ...novoUsuario, nome: e.target.value })}
               placeholder="Ex: Carlos Alberto"
               className="w-full px-3 py-2 border border-slate-200 rounded-xl outline-none text-sm focus:border-indigo-500 font-medium transition-all"
@@ -49,7 +49,7 @@ export default function ModalUsuario({
             <label className="text-xs font-semibold text-slate-500 uppercase">E-mail Corporativo</label>
             <input 
               type="email" 
-              value={novoUsuario.email}
+              value={novoUsuario.email || ''}
               onChange={(e) => setNovoUsuario({ ...novoUsuario, email: e.target.value })}
               placeholder="Ex: carlos@researchpoint.com"
               className="w-full px-3 py-2 border border-slate-200 rounded-xl outline-none text-sm focus:border-indigo-500 font-medium transition-all"
@@ -57,11 +57,25 @@ export default function ModalUsuario({
             />
           </div>
 
+          {/* senha de acesso */}
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-slate-500 uppercase">Senha de Acesso</label>
+            <input 
+              type="password" 
+              value={novoUsuario.senha || ''}
+              onChange={(e) => setNovoUsuario({ ...novoUsuario, senha: e.target.value })}
+              placeholder={idEditando ? "Digite uma nova senha ou mantenha" : "Crie uma senha de até 8 dígitos"}
+              maxLength="8"
+              className="w-full px-3 py-2 border border-slate-200 rounded-xl outline-none text-sm focus:border-indigo-500 font-medium transition-all"
+              required={!idEditando} // Só é obrigatório se for um novo cadastro
+            />
+          </div>
+
           {/* select do cargo */}
           <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-slate-500 uppercase">Cargo / Nível de Acesso</label>
             <select 
-              value={novoUsuario.cargo}
+              value={novoUsuario.cargo || 'Pesquisador'}
               onChange={(e) => setNovoUsuario({ ...novoUsuario, cargo: e.target.value })}
               className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl outline-none text-sm focus:border-indigo-500 font-medium cursor-pointer transition-all"
             >
