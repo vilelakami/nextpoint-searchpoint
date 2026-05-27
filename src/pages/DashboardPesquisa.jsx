@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 // importação dos ícones
 import { Settings, Plus } from 'lucide-react';
@@ -9,10 +9,17 @@ import Status from '../components/status/Status';
 import SearchBar from '../components/searchbar/SearchBar';
 import CardForm from '../components/cards-forms/CardsForms';
 
+// Importação dos componentes do Radix UI e TanStack Table
+import {
+  useReactTable,
+  getCoreRowModel,
+} from '@tanstack/react-table';
+
 export default function DashboardPesquisa() {
-  const [modalFormsAberto, setModalFormsAberto] = useState(false);
   const navigate = useNavigate();
   const [bancoLocal, setBancolocal] = useState([]);
+  const [busca, setBusca] = useState('');
+  const [filtroStatus, setFiltroStatus] = useState('todas');
 
   useEffect(() => {
     const pesquisasSalvas = JSON.parse(localStorage.getItem('pesquisas')) || [];
@@ -21,7 +28,6 @@ export default function DashboardPesquisa() {
 
   // função pra mudar status
   const handleAlternarPausa = (idPesquisa, statusAtual) => {
-    // se ta em_pausa volta para rascunho, senão vira em_pausa
     const novoStatus = statusAtual === 'em_pausa' ? 'rascunho' : 'em_pausa';
 
     const listaAtualizada = bancoLocal.map((pesquisa) => {
@@ -31,7 +37,6 @@ export default function DashboardPesquisa() {
       return pesquisa;
     });
 
-    // atualizando estado
     setBancolocal(listaAtualizada);
     localStorage.setItem('pesquisas', JSON.stringify(listaAtualizada));
   };
@@ -45,10 +50,44 @@ export default function DashboardPesquisa() {
     localStorage.setItem('pesquisas', JSON.stringify(listaFiltrada));
   };
 
+  // colunas que a biblioteca usará como referência
+  const colunas = useMemo(
+    () => [{ accessorKey: 'titulo' }, { accessorKey: 'status' }],
+    [],
+  );
+
+  // 1. Inicializamos a TanStack Table de maneira estável e memorizada
+  const table = useReactTable({
+    data: bancoLocal,
+    columns: colunas,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  // filtragem no search bar
+  const pesquisasFiltradas = useMemo(() => {
+    return bancoLocal.filter((pesquisa) => {
+      // Validação 1: Busca por Texto
+      const titulo = (pesquisa.titulo || '').toLowerCase();
+      const bateTexto = titulo.includes(busca.toLowerCase());
+
+      // Validação 2: Filtro por Aba de Status
+      let bateStatus = false;
+      if (filtroStatus === 'todas') {
+        bateStatus = true;
+      } else if (filtroStatus === 'em_andamento') {
+        bateStatus = pesquisa.status === 'ativa';
+      } else {
+        bateStatus = pesquisa.status === filtroStatus;
+      }
+
+      return bateTexto && bateStatus;
+    });
+  }, [bancoLocal, busca, filtroStatus]);
+
   return (
-    <div className="flex flex-col w-full mx-auto h-screen">
+    <div className="flex flex-col w-full mx-auto h-screen bg-slate-50">
       {/* cabeçalho */}
-      <div className="w-full flex flex-col h-auto min-h-[30vh] lg:h-1/3 bg-indigo-500">
+      <div className="w-full flex flex-col h-auto min-h-[30vh] lg:h-1/3 bg-indigo-500 shrink-0">
         {/* logo e nav */}
         <div className="w-full flex items-center justify-between h-auto min-h-[50px] lg:h-[62px] bg-indigo-700 p-3 md:p-4 gap-2 md:gap-4">
           <div className="flex items-center ml-2 md:ml-4 gap-2">
@@ -86,27 +125,37 @@ export default function DashboardPesquisa() {
           </button>
         </div>
       </div>
+      
       {/* main */}
-      <div className="flex flex-col gap-6 md:gap-8 lg:gap-15 w-full max-w-6xl mx-auto px-3 md:px-6 lg:px-8 py-4 md:py-6 lg:py-6 overflow-y-auto">
+      <div className="flex-grow overflow-y-auto w-full max-w-6xl mx-auto px-3 md:px-6 lg:px-8 py-4 md:py-6 lg:py-6 flex flex-col gap-6 md:gap-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between w-full gap-4 md:gap-6">
           <div className="w-full md:w-auto overflow-x-auto">
-            <Status />
+            {/* Passando o estado do filtro para o componente filho */}
+            <Status filtroAtual={filtroStatus} setFiltro={setFiltroStatus} />
           </div>
           <div className="w-full md:w-auto md:min-w-[250px]">
-            <SearchBar />
+            {/* Passando o estado da busca para a barra de pesquisa */}
+            <SearchBar busca={busca} setBusca={setBusca} />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 lg:gap-6">
-          {bancoLocal.map((pesquisa) => (
-            <CardForm
-              key={pesquisa.id_pesquisa}
-              pesquisa={pesquisa}
-              onClick={() => navigate(`/formulario/${pesquisa.id_pesquisa}`)}
-              onAlternarPausa={handleAlternarPausa} // 👈 Passando a função de pausa pro filho
-              onExcluir={handleExcluirPesquisa} // 👈 Passando a função de excluir pro filho
-            />
-          ))}
+        {/* Grid de Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 lg:gap-6 pb-12">
+          {pesquisasFiltradas.length > 0 ? (
+            pesquisasFiltradas.map((pesquisa) => (
+              <CardForm
+                key={pesquisa.id_pesquisa}
+                pesquisa={pesquisa}
+                onClick={() => navigate(`/formulario/${pesquisa.id_pesquisa}`)}
+                onAlternarPausa={handleAlternarPausa}
+                onExcluir={handleExcluirPesquisa}
+              />
+            ))
+          ) : (
+            <div className="text-center col-span-full py-12 text-slate-400 font-medium text-sm">
+              Nenhum formulário encontrado para os filtros selecionados.
+            </div>
+          )}
         </div>
       </div>
     </div>

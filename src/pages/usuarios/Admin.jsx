@@ -1,9 +1,11 @@
 import React from 'react';
 import Usuarios from '../../components/controle-usuarios/Usuarios';
 import { ArrowLeft, UserPlus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../components/searchbar/SearchBar';
 
 export default function Admin() {
+    const navigate = useNavigate();
   return (
     <div className="flex flex-col w-full mx-auto h-screen font-montserrat">
       <div className="w-full flex items-center justify-between h-[62px] bg-indigo-700 p-4 shrink-0">
@@ -29,7 +31,9 @@ export default function Admin() {
             </button>
       </div>
       <div>
+        <div className='flex justify-center w-full mb-5 mt-5'>
         <SearchBar/>
+        </div>
         <Usuarios/>
       </div>
     </div>
