@@ -4,6 +4,7 @@ import Dashboard from './pages/DashboardPesquisa';
 import Formulario from './pages/Formulario';
 import ResponderFormulario from './pages/ResponderPesquisa';
 import Admin from './pages/usuarios/Admin';
+import Login from './pages/auth/Login';
 
 export default function App() {
   return (
@@ -11,7 +12,8 @@ export default function App() {
       <div className="flex flex-col w-full h-screen">
         <main className="flex-1 h-full flex flex-col">
           <Routes>
-            <Route path="/" element={<Navigate to="/Dashboard" />} />
+            <Route path="/" element={<Navigate to="/Login" />} />
+            <Route path="/Login" element={<Login />} />
             <Route path="/Dashboard" element={<Dashboard />} />
             <Route path="/Formulario" element={<Formulario />} />
             <Route path="/Admin" element={<Admin />} />
