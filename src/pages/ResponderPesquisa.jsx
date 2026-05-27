@@ -80,7 +80,7 @@ export default function ResponderFormulario() {
             Cancelar
           </button>
 
-          {/* 🏁 botão 'finalizar' que altera os status para 'concluida' */}
+          {/* botão 'finalizar' que altera os status para 'concluida' */}
           <button
             onClick={() => salvarProgressoPesquisa('concluida', 'Pesquisa finalizada com sucesso!')}
             type="button"

@@ -1,77 +1,111 @@
-import React, { useState, useEffect } from 'react';
-import { ImageDown, CircleDot, Pencil, Plus, Trash } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  ImageDown,
+  CircleDot,
+  Pencil,
+  Plus,
+  Trash,
+  Trash2,
+} from 'lucide-react';
 
 import { ajustarAltura } from '../../utils/dados';
 
-export default function Pergunta({ dados, atualizarPergunta, adicionarOpcao }) {
-  const [tipoPergunta, setTipoPergunta] = useState('multipla_escolha');
+export default function Pergunta({
+  dados,
+  atualizarPergunta,
+  adicionarOpcao,
+  onExcluirPergunta,
+}) {
   const [editandoCabecalho, setEditandoCabecalho] = useState(false);
 
   return (
-    <div className="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm font-montserrat">
+    <div className="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm font-montserrat relative w-full">
       {/* Linha do Topo: Inputs na esquerda, Ações na direita */}
-      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-        {/* BLOCO DA ESQUERDA: Título e Descrição */}
-        <div className="flex flex-col gap-2 flex-grow max-w-2xl w-full">
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 w-full">
+        
+        {/* BLOCO DA ESQUERDA: Título e Descrição (Removido o max-w-2xl para permitir que os filhos expandam) */}
+        <div className="flex flex-col gap-2 flex-grow w-full">
+          
           {/* Textarea de Título auto-expansível */}
-          <div className="flex items-start gap-2 group border-b border-transparent hover:border-slate-100 focus-within:border-indigo-500 transition-colors">
+          <div className="flex items-start gap-2 group border-b border-transparent hover:border-slate-100 focus-within:border-indigo-500 transition-colors relative w-full">
+            {/* 💡 FUNCIONALIDADE 2: Asterisco Vermelho se for Obrigatória */}
+            {dados.obrigatoria && (
+              <span className="ml-1 mt-1 text-red-500 font-bold text-lg select-none absolute -left-4 top-1">
+                *
+              </span>
+            )}
+
             <textarea
               value={dados.titulo}
               onChange={(e) =>
                 atualizarPergunta(dados.id, 'titulo', e.target.value)
               }
               rows={1}
-              onInput={ajustarAltura} // Dispara a função toda vez que o usuário digitar ou quebrar linha
+              onInput={ajustarAltura}
               className="flex-grow bg-transparent placeholder:text-black text-black font-semibold text-lg py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[36px]"
               placeholder="Título"
               disabled={!editandoCabecalho}
               onBlur={() => setEditandoCabecalho(false)}
             />
-            <button type='button' onClick={() => setEditandoCabecalho(!editandoCabecalho)}>
-            <Pencil className="size-4 text-slate-400 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity mt-2" />
+            <button
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault(); // Evita que o onBlur trave o input antes do clique fechar o estado
+                setEditandoCabecalho(!editandoCabecalho);
+              }}
+            >
+              <Pencil className="size-4 text-slate-400 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity mt-2" />
             </button>
           </div>
 
-          {/* Textarea de Descrição auto-expansível */}
-          <div className="flex items-start gap-2 group border-b border-transparent hover:border-slate-100 focus-within:border-indigo-500 transition-colors">
+          {/* Textarea de Descrição - Ajustada com w-full e flex-1 para esticar de ponta a ponta na linha */}
+          <div className="flex items-start gap-2 group border-b border-transparent hover:border-slate-100 focus-within:border-indigo-500 transition-colors w-full">
             <textarea
               value={dados.descricao}
               onChange={(e) =>
                 atualizarPergunta(dados.id, 'descricao', e.target.value)
               }
               rows={1}
-              onInput={ajustarAltura} // Dispara a função aqui também
-              className="flex-grow bg-transparent placeholder:text-slate-400 text-slate-600 font-normal text-sm py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px]"
+              onInput={ajustarAltura}
+              // 💡 w-full e flex-1 garantem que ela preencha todo o espaço até o botão do lápis na direita
+              className="w-full flex-1 bg-transparent placeholder:text-slate-400 text-slate-600 font-normal text-sm py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px]"
               placeholder="Descrição"
               disabled={!editandoCabecalho}
               onBlur={() => setEditandoCabecalho(false)}
             />
-            <button type='button' onClick={() => setEditandoCabecalho(!editandoCabecalho)}>
-            <Pencil className="size-4 text-slate-400 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity mt-1.5" />
+
+            <button
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setEditandoCabecalho(!editandoCabecalho);
+              }}
+              className="shrink-0"
+            >
+              <Pencil className="size-4 text-slate-400 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity mt-1.5" />
             </button>
           </div>
         </div>
 
-        {/* BLOCO DA DIREITA: Ícone de imagem e Select */}
-        <div className="flex items-center justify-end gap-3 md:gap-4 shrink-0">
+        {/* BLOCO DA DIREITA: Ícone de imagem, Select, Toggle e Lixeira */}
+        <div className="flex items-center justify-end gap-3 md:gap-4 shrink-0 lg:mt-1">
+          {/* 💡 FUNCIONALIDADE 1: Botão/Input de Upload de Imagem */}
           <label className="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer">
             <ImageDown className="size-5" />
-
-            {/* O input real fica aqui dentro, mas invisível debaixo do ícone */}
             <input
               type="file"
-              accept="image/*" // Aceita apenas arquivos de imagem
-              className="hidden" // Esconde o visual padrão feio do sistema operacional
+              accept="image/*"
+              className="hidden"
               onChange={(e) => {
-                const arquivo = e.target.files[0]; // Pega o primeiro arquivo selecionado
+                const arquivo = e.target.files[0];
                 if (arquivo) {
-                  // Avisa o pai enviando o ID da pergunta, o campo 'imagem' e o arquivo
                   atualizarPergunta(dados.id, 'imagem', arquivo);
                 }
               }}
             />
           </label>
 
+          {/* Select de Tipo de Pergunta */}
           <div className="flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-xl border border-transparent focus-within:border-slate-300 transition-all">
             <CircleDot className="size-4 text-slate-600" />
             <select
@@ -80,12 +114,14 @@ export default function Pergunta({ dados, atualizarPergunta, adicionarOpcao }) {
                 atualizarPergunta(dados.id, 'tipo', e.target.value)
               }
               id="tipos_perguntas"
-              className="block w-full bg-transparent bg-gray-200 text-sm rounded border-0 outline-none border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:border-transparent focus:shadow-none cursor-pointer"
+              className="block w-full bg-transparent text-sm rounded border-0 outline-none border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:border-transparent focus:shadow-none cursor-pointer py-0"
             >
               <option value="multipla_escolha">Múltipla Escolha</option>
               <option value="texto">Texto</option>
             </select>
           </div>
+
+          {/* Toggle de Obrigatoriedade */}
           <div>
             <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700 select-none group">
               <span className="group-hover:text-slate-900 transition-colors">
@@ -94,7 +130,7 @@ export default function Pergunta({ dados, atualizarPergunta, adicionarOpcao }) {
               <input
                 type="checkbox"
                 className="sr-only peer"
-                checked={dados.obrigatoria}
+                checked={dados.obrigatoria || false}
                 onChange={(e) =>
                   atualizarPergunta(dados.id, 'obrigatoria', e.target.checked)
                 }
@@ -102,16 +138,41 @@ export default function Pergunta({ dados, atualizarPergunta, adicionarOpcao }) {
               <div className="relative w-10 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 transition-colors"></div>
             </label>
           </div>
-          <div>
-            <Trash className="size-4 hover:text-red-600" />
-          </div>
+
+          {/* 💡 FUNCIONALIDADE 3: Botão de Lixeira para Deletar a Questão */}
+          <button
+            type="button"
+            onClick={() => onExcluirPergunta(dados.id)}
+            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            title="Excluir pergunta"
+          >
+            <Trash2 className="size-5" />
+          </button>
         </div>
       </div>
 
+      {/* 💡 FUNCIONALIDADE 1 VISUAL: Exibição da Imagem após o Título/Descrição */}
+      {dados.imagem && (
+        <div className="relative my-2 max-w-md rounded-lg overflow-hidden border border-slate-200 group self-start">
+          <img
+            src={URL.createObjectURL(dados.imagem)}
+            alt="Upload da pergunta"
+            className="w-full h-auto object-cover max-h-64"
+          />
+          <button
+            type="button"
+            onClick={() => atualizarPergunta(dados.id, 'imagem', null)}
+            className="absolute top-2 right-2 bg-black/70 hover:bg-black text-white p-1.5 rounded-full transition-colors"
+            title="Remover imagem"
+          >
+            <Trash className="size-4" />
+          </button>
+        </div>
+      )}
+
       {/* Condicional: Conteúdo da Múltipla Escolha */}
       {dados.tipo === 'multipla_escolha' && (
-        <div className="flex flex-col gap-3 mt-2 pl-1 animate-in fade-in duration-150">
-          {/* Opção 1 auto-expansível */}
+        <div className="flex flex-col gap-3 mt-2 pl-1 animate-in fade-in duration-150 w-full">
           {dados.opcoes.map((opcao, indexOpcao) => (
             <div
               key={indexOpcao}
@@ -132,7 +193,7 @@ export default function Pergunta({ dados, atualizarPergunta, adicionarOpcao }) {
                   atualizarPergunta(dados.id, 'opcoes', novasOpcoes);
                 }}
                 className="flex-grow bg-transparent border-b border-transparent hover:border-slate-200 focus:border-[#4F46E5] text-slate-800 font-normal text-sm py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px]"
-                placeholder="Opção 1"
+                placeholder={`Opção ${indexOpcao + 1}`}
               />
             </div>
           ))}
@@ -151,7 +212,7 @@ export default function Pergunta({ dados, atualizarPergunta, adicionarOpcao }) {
 
       {/* Condicional: Campo de resposta para Texto */}
       {dados.tipo === 'texto' && (
-        <div className="mt-2 animate-in fade-in duration-150">
+        <div className="mt-2 animate-in fade-in duration-150 w-full">
           <input
             type="text"
             disabled
