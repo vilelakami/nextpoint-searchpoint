@@ -8,3 +8,26 @@
     box-sizing: border-box;
   }
 }
+
+@theme {
+  --animate-typing: typing 2.5s steps(13) infinite alternate, blink .7s infinite;
+
+  @keyframes typing {
+    0% {
+      width: 0%;
+      visibility: hidden;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+
+  @keyframes blink {
+    50% {
+      border-color: transparent;
+    }
+    100% {
+      border-color: white;
+    }
+  }
+}

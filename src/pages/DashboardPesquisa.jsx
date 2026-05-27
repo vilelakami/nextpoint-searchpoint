@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 // importação dos ícones
-import { Settings, Plus } from 'lucide-react';
+import { Settings, Plus, LogOut } from 'lucide-react';
 import logotipo from '../assets/icons/logotipo.svg';
 // importação das páginas
 import Nav from '../components/navbar/Nav';
@@ -104,6 +104,9 @@ export default function DashboardPesquisa() {
             <button type="button" onClick={() => navigate('/Admin')}>
               <Settings className="w-4 h-4 md:size-5 text-white mr-2 md:mr-4 shrink-0 hover:text-black" />
             </button>
+            <button type="button" onClick={() => navigate('/')}>
+              <LogOut className='w-4 h-4 md:size-5 text-white mr-2 md:mr-4 shrink-0 hover:text-black'/>
+          </button>
           </div>
         </div>
         

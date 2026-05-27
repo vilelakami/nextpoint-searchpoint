@@ -59,17 +59,20 @@ function Login() {
       <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 min-h-[500px]">
         
         {/* lado esq -> identidade visual */}
-        <div className="bg-indigo-700 p-8 md:p-12 flex flex-col justify-center text-white">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-            ResearchPoint
-          </h2>
-          <p className="text-indigo-200 text-sm md:text-base font-medium">
+        <div className="bg-indigo-700 p-8 md:p-12 flex flex-col justify-center text-white select-none">
+          <div className="w-max">
+            {/* O "animate-typing" vai buscar diretamente a regra criada no index.css */}
+            <h1 className="animate-typing overflow-hidden whitespace-nowrap border-r-4 border-r-white pr-2 text-3xl md:text-4xl font-semibold tracking-tight mb-2">
+              ResearchPoint
+            </h1>
+          </div>
+          <p className="text-indigo-200 text-sm md:text-base font-normal pl-1">
             Powered by NextPoint
           </p>
         </div>
 
         {/* lado direito -> forms */}
-        <div className="p-8 md:p-12 flex flex-col justify-center bg-white">
+        <div className="p-8 md:p-12 flex flex-col items-center justify-center bg-white">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8">
             Login
           </h2>
