@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
 // importação dos ícones
-import {
-  ImageDown,
-  CircleDot,
-  Pencil,
-  Plus,
-  Trash,
-  Trash2,
-} from 'lucide-react';
-
-// importação dos dados
+import { CircleDot, Pencil, Plus, Trash2 } from 'lucide-react';
+// importando dados e funções auxiliares
 import { ajustarAltura } from '../../utils/dados';
 
 export default function Pergunta({
@@ -18,23 +10,21 @@ export default function Pergunta({
   adicionarOpcao,
   onExcluirPergunta,
 }) {
-  const [editandoCabecalho, setEditandoCabecalho] = useState(false);
+  const [editandoPergunta, setEditandoPergunta] = useState(false);
 
   return (
-    <div className="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm font-montserrat relative w-full">
-      {/* Linha do Topo: Inputs na esquerda, Ações na direita */}
+    <div className="bg-white p-4 rounded-xl flex flex-col gap-4 shadow-sm relative w-full border border-slate-100">
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 w-full">
-        {/* titulo e descricao da pergunta */}
+        {/* Titulo e Descricao da Pergunta */}
         <div className="flex flex-col gap-2 flex-grow w-full">
-          {/* Textarea de Título auto-expansível */}
-          <div className="flex items-start gap-2 group border-b border-transparent hover:border-slate-100 focus-within:border-indigo-500 transition-colors relative w-full">
-            {/* se a questão for "obrigatória" adiciona um * vermelho */}
+          {/* Textarea de Título com Feedback visual do Lápis */}
+          <div className="flex items-center gap-2 group relative w-full">
             {dados.obrigatoria && (
-              <span className="ml-1 mt-1 text-red-500 font-bold text-lg select-none absolute -left-4 top-1">
+              <span className=" text-red-500 font-bold text-lg select-none absolute -left-1.5 top-2.5">
                 *
               </span>
             )}
-
+            {/* campo do título */}
             <textarea
               value={dados.titulo}
               onChange={(e) =>
@@ -42,24 +32,24 @@ export default function Pergunta({
               }
               rows={1}
               onInput={ajustarAltura}
-              className="flex-grow bg-transparent placeholder:text-black text-black font-semibold text-lg py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[36px]"
-              placeholder="Título"
-              disabled={!editandoCabecalho}
-              onBlur={() => setEditandoCabecalho(false)}
+              className={`flex-grow p-2 rounded-xl text-black font-semibold text-lg py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[36px] transition-all ${
+                editandoPergunta
+                  ? 'bg-white border-2 border-indigo-500 shadow-sm ring-4 ring-indigo-50 text-slate-900'
+                  : 'bg-transparent border-2 border-transparent text-black'
+              }`}
+              placeholder="Título da pergunta"
+              disabled={!editandoPergunta}
             />
             <button
               type="button"
-              onMouseDown={(e) => {
-                e.preventDefault();
-                setEditandoCabecalho(!editandoCabecalho);
-              }}
+              onClick={() => setEditandoPergunta(!editandoPergunta)}
             >
-              <Pencil className="size-4 text-slate-400 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity mt-2" />
+              <Pencil className={`size-4 shrink-0 transition-colors mt-2 ${editandoPergunta ? 'text-indigo-600' : 'text-slate-400'}`} />
             </button>
           </div>
 
           {/* descrição */}
-          <div className="flex items-start gap-2 group border-b border-transparent hover:border-slate-100 focus-within:border-indigo-500 transition-colors w-full">
+          <div className="flex items-center gap-2 group w-full">
             <textarea
               value={dados.descricao}
               onChange={(e) =>
@@ -67,44 +57,27 @@ export default function Pergunta({
               }
               rows={1}
               onInput={ajustarAltura}
-              className="w-full flex-1 bg-transparent placeholder:text-slate-400 text-slate-600 font-normal text-sm py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px]"
-              placeholder="Descrição"
-              disabled={!editandoCabecalho}
-              onBlur={() => setEditandoCabecalho(false)}
+              className={`w-full flex-1 p-2 rounded-xl text-slate-600 font-normal text-sm py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px] transition-all ${
+                editandoPergunta
+                  ? 'bg-white border-2 border-indigo-500 shadow-sm ring-4 ring-indigo-50 text-slate-900'
+                  : 'bg-transparent border-2 border-transparent text-slate-500'
+              }`}
+              placeholder="Descrição ou orientação (opcional)"
+              disabled={!editandoPergunta}
             />
-
             <button
               type="button"
-              onMouseDown={(e) => {
-                e.preventDefault();
-                setEditandoCabecalho(!editandoCabecalho);
-              }}
+              onClick={() => setEditandoPergunta(!editandoPergunta)}
               className="shrink-0"
             >
-              <Pencil className="size-4 text-slate-400 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity mt-1.5" />
+              <Pencil className={`size-4 shrink-0 transition-colors mt-1.5 ${editandoPergunta ? 'text-indigo-600' : 'text-slate-400'}`} />
             </button>
           </div>
         </div>
 
-        {/* imagem, toggle de obrigatoria, tipo da pergunta e lixeira */}
+        {/* Controles de tipo, obrigatoriedade e lixeira */}
         <div className="flex items-center justify-end gap-3 md:gap-4 shrink-0 lg:mt-1">
-          {/* btn add imagem */}
-          <label className="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer">
-            <ImageDown className="size-5" />
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const arquivo = e.target.files[0];
-                if (arquivo) {
-                  atualizarPergunta(dados.id, 'imagem', arquivo);
-                }
-              }}
-            />
-          </label>
-
-          {/* Select de Tipo de Pergunta */}
+          {/* Select de Tipo de Pergunta - multipla resposta/uma resposta */}
           <div className="flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-xl border border-transparent focus-within:border-slate-300 transition-all">
             <CircleDot className="size-4 text-slate-600" />
             <select
@@ -113,32 +86,37 @@ export default function Pergunta({
                 atualizarPergunta(dados.id, 'tipo', e.target.value)
               }
               id="tipos_perguntas"
-              className="block w-full bg-transparent text-sm rounded border-0 outline-none border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:border-transparent focus:shadow-none cursor-pointer py-0"
+              className="block w-full bg-transparent text-sm rounded border-0 outline-none border-none focus:outline-none focus:ring-0 focus:border-transparent cursor-pointer py-0"
             >
-              <option value="multipla_escolha">Múltipla Escolha</option>
-              <option value="texto">Texto</option>
+              <option value="multipla_escolha">Múltipla Escolha - Uma resposta</option>
+              <option value="caixa_selecao">Múltipla Escolha - Múltipla Resposta</option>
+              <option value="texto">Texto Livre</option>
             </select>
           </div>
 
-          {/* Toggle de Obrigatoriedade */}
+          {/* toggle de questão obrigatória */}
           <div>
             <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700 select-none group">
               <span className="group-hover:text-slate-900 transition-colors">
                 Obrigatória
               </span>
-              <input
-                type="checkbox"
-                className="sr-only peer"
-                checked={dados.obrigatoria || false}
-                onChange={(e) =>
-                  atualizarPergunta(dados.id, 'obrigatoria', e.target.checked)
-                }
-              />
-              <div className="relative w-10 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 transition-colors"></div>
+              <button
+                type="button"
+                onClick={() => atualizarPergunta(dados.id, 'obrigatoria', !dados.obrigatoria)}
+                className={`w-11 h-6 flex items-center rounded-full p-0.5 transition-colors duration-300 outline-none ${
+                  dados.obrigatoria ? 'bg-indigo-600' : 'bg-slate-300'
+                }`}
+              >
+                <div
+                  className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${
+                    dados.obrigatoria ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
             </label>
           </div>
 
-          {/* btn de excluir bloco de pergunta */}
+          {/* btn excluir bloco de pergunta */}
           <button
             type="button"
             onClick={() => onExcluirPergunta(dados.id)}
@@ -150,38 +128,18 @@ export default function Pergunta({
         </div>
       </div>
 
-      {/* exibindo a img dps da descficao e do titulo */}
-      {dados.imagem && (
-        <div className="max-w-md overflow-hidden rounded-lg border border-slate-200 mt-2 self-start">
-          <img
-            src={
-              dados.imagem instanceof Blob || dados.imagem instanceof File
-                ? URL.createObjectURL(dados.imagem)
-                : typeof dados.imagem === 'string'
-                  ? dados.imagem
-                  : ''
-            }
-            alt="Mídia da pergunta"
-            className="w-full h-auto object-cover max-h-64"
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
-          />
-        </div>
-      )}
-
-      {/* condicional, se for multipla escolha aparece as opções, se nao, o textarea */}
-      {dados.tipo === 'multipla_escolha' && (
+      {/* Condicional de Respostas baseadas no tipo selecionado */}
+      {(dados.tipo === 'multipla_escolha' || dados.tipo === 'caixa_selecao') && (
         <div className="flex flex-col gap-3 mt-2 pl-1 animate-in fade-in duration-150 w-full">
           {dados.opcoes.map((opcao, indexOpcao) => (
             <div
               key={indexOpcao}
-              className="flex items-start gap-3 group max-w-md w-full"
+              className="ml-1.5 flex items-center gap-3 group max-w-md w-full"
             >
               <input
-                type="radio"
+                type={dados.tipo === 'caixa_selecao' ? 'checkbox' : 'radio'}
                 disabled
-                className="accent-[#4F46E5] size-4 cursor-not-allowed mt-2"
+                className="accent-[#4F46E5] size-4 cursor-not-allowed"
               />
               <textarea
                 rows={1}
@@ -193,31 +151,31 @@ export default function Pergunta({
                   atualizarPergunta(dados.id, 'opcoes', novasOpcoes);
                 }}
                 className="flex-grow bg-transparent border-b border-transparent hover:border-slate-200 focus:border-[#4F46E5] text-slate-800 font-normal text-sm py-1 focus:outline-none resize-none break-words overflow-hidden h-auto min-h-[28px]"
-                placeholder={`Resposta ${indexOpcao + 1}`}
+                placeholder={`Opção de resposta ${indexOpcao + 1}`}
               />
             </div>
           ))}
 
-          {/* btn add opção */}
+          {/* Botão adicionar opção */}
           <button
             type="button"
             onClick={() => adicionarOpcao(dados.id)}
             className="max-w-fit flex items-center gap-2 text-slate-500 hover:text-[#4F46E5] font-medium text-sm py-1 transition-colors group"
           >
             <Plus className="size-4 md:size-5 text-slate-400 group-hover:text-[#4F46E5] transition-colors" />
-            <span>Adicionar Resposta</span>
+            <span>Adicionar Opção</span>
           </button>
         </div>
       )}
 
-      {/* add textarea */}
+      {/* Tipo Texto livre */}
       {dados.tipo === 'texto' && (
         <div className="mt-2 animate-in fade-in duration-150 w-full">
           <input
             type="text"
             disabled
-            placeholder="Texto de resposta curta"
-            className="w-full max-w-xl border-b border-dashed border-slate-200 text-sm py-2 bg-transparent text-slate-400 cursor-not-allowed"
+            placeholder="Campo de texto para resposta curta..."
+            className="w-full max-w-xl border-b border-dashed border-slate-200 text-sm py-2 bg-transparent text-slate-400 cursor-not-allowed focus:outline-none"
           />
         </div>
       )}
