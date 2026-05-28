@@ -27,7 +27,7 @@ export default function ModalUsuario({
         
         {/* Título dinâmico */}
         <h2 className="text-xl font-semibold text-slate-800 border-b border-slate-100 pb-3 mb-4 font-montserrat">
-          {idEditando ? 'Editar Usuário' : 'Adicionar Novo Supervisor'}
+          {idEditando ? 'Editar Usuário' : 'Adicionar Novo Usuário'}
         </h2>
         
         <form onSubmit={handleSalvarUsuario} className="flex flex-col gap-4 font-montserrat">
@@ -67,7 +67,7 @@ export default function ModalUsuario({
               placeholder={idEditando ? "Digite uma nova senha ou mantenha" : "Crie uma senha de até 8 dígitos"}
               maxLength="8"
               className="w-full px-3 py-2 border border-slate-200 rounded-xl outline-none text-sm focus:border-indigo-500 font-medium transition-all"
-              required={!idEditando} // Só é obrigatório se for um novo cadastro
+              required={!idEditando} 
             />
           </div>
 
@@ -80,6 +80,8 @@ export default function ModalUsuario({
               className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl outline-none text-sm focus:border-indigo-500 font-medium cursor-pointer transition-all"
             >
               <option value="Admin">Admin</option>
+              {/* ADICIONADO A OPÇÃO DE SUPERVISOR DENTRO DO MODAL DE CADASTRO */}
+              <option value="Supervisor">Supervisor</option>
               <option value="Pesquisador">Pesquisador</option>
             </select>
           </div>

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-// importação dos ícones
 import {
   FileText,
   MoreVertical,
@@ -10,11 +9,10 @@ import {
   FilePieChart,
   Pause,
   Eye,
+  Pencil,
 } from 'lucide-react';
-// importação dos dados (cores dos status)
 import { statusStyles } from '../../utils/dados';
 
-// paleta de cores randomica
 const PALETA_CORES = [
   'bg-pink-400',
   'bg-teal-400',
@@ -24,24 +22,22 @@ const PALETA_CORES = [
   'bg-lime-500',
 ];
 
-export default function CardForm({
+export default function CardForms({
   pesquisa,
-  onClick,
+  cargoUsuario,
   onExcluir,
   onAlternarPausa,
 }) {
   const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
-  const [coordenadas, setCoordenadas] = useState({ top: 0, left: 0 }); // Guarda a posição do clique
+  const [coordenadas, setCoordenadas] = useState({ top: 0, left: 0 });
   const buttonRef = useRef(null);
   const menuRef = useRef(null);
 
-  // função que gera a cor aleatória dos cards
   const corAleatoriaRef = useRef(
     PALETA_CORES[Math.floor(Math.random() * PALETA_CORES.length)],
   );
 
-  // Calcula a posição exata na tela onde o menu deve abrir antes de ser teletransportado via Portal
   const abrirMenu = (e) => {
     e.stopPropagation();
     if (buttonRef.current) {
@@ -70,15 +66,10 @@ export default function CardForm({
 
   return (
     <div
-      onClick={onClick}
-      className="bg-white rounded-lg md:rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col h-full cursor-pointer hover:shadow-md transition-shadow relative"
+      className="bg-white rounded-lg md:rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow relative"
     >
-      {/* navbar colorida */}
-      <div
-        className={`h-20 md:h-24 lg:h-28 w-full ${corAleatoriaRef.current}`}
-      />
+      <div className={`h-20 md:h-24 lg:h-28 w-full ${corAleatoriaRef.current}`} />
 
-      {/* conteúdo do card */}
       <div className="p-3 md:p-4 lg:p-5 flex flex-col flex-grow justify-between gap-3 md:gap-4">
         <div>
           <div className="flex justify-between items-start gap-2 mb-1 md:mb-2">
@@ -86,7 +77,6 @@ export default function CardForm({
               {pesquisa.titulo || 'Sem título'}
             </h3>
 
-            {/* btn de 3 pontinhos */}
             <button
               ref={buttonRef}
               type="button"
@@ -102,7 +92,6 @@ export default function CardForm({
           </p>
         </div>
 
-        {/* rodapé do card */}
         <div className="flex justify-between items-center mt-1 md:mt-2">
           <div className="flex items-center gap-1 md:gap-1.5 text-slate-600 text-xs font-semibold">
             <FileText className="w-3 h-3 md:w-4 md:h-4 text-slate-400 shrink-0" />
@@ -111,7 +100,6 @@ export default function CardForm({
             </span>
           </div>
 
-          {/* status com cores randomicos */}
           <span
             className={`text-[8px] md:text-[10px] tracking-wider font-bold px-2 md:px-2.5 py-0.5 md:py-1 rounded-md uppercase shrink-0 ${
               statusStyles[
@@ -125,12 +113,13 @@ export default function CardForm({
               ? 'Em Pausa'
               : pesquisa?.status === 'concluida'
                 ? 'Concluída'
-                : pesquisa?.status || 'Rascunho'}
+                : pesquisa?.status === 'em_andamento'
+                  ? 'Em Andamento'
+                  : pesquisa?.status || 'Rascunho'}
           </span>
         </div>
       </div>
 
-      {/* Portal que teleporta o modal para fora da zona de corte do card */}
       {menuAberto &&
         createPortal(
           <div
@@ -142,85 +131,123 @@ export default function CardForm({
             }}
             className="w-48 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 py-1.5 animate-in fade-in zoom-in-95 duration-100"
           >
-            {/*iniciar / continuar / visualizar */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setMenuAberto(false);
-                navigate(`/responder/${pesquisa.id_pesquisa}`);
-              }}
-              className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left font-medium transition-colors"
-            >
-              {pesquisa.status === 'concluida' ? (
-                <Eye className="w-4 h-4 text-slate-500" />
-              ) : (
-                <Play className="w-4 h-4 text-slate-500" />
-              )}
-              <span>
-                {pesquisa.status === 'em_pausa' && 'Continuar pesquisa'}
-                {pesquisa.status === 'concluida' && 'Visualizar pesquisa'}
-                {pesquisa.status !== 'em_pausa' &&
-                  pesquisa.status !== 'concluida' &&
-                  'Iniciar pesquisa'}
-              </span>
-            </button>
+            {pesquisa.status === 'rascunho' ? (
+              <>
+                {cargoUsuario === 'Admin' ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuAberto(false);
+                      navigate(`/formulario/${pesquisa.id_pesquisa}`);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left font-medium transition-colors"
+                  >
+                    <Pencil className="w-4 h-4 text-slate-500" />
+                    <span>Editar rascunho</span>
+                  </button>
+                ) : (
+                  <div className="px-4 py-2 text-xs text-slate-400 italic font-medium">
+                    Rascunho bloqueado para edição
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                {/* AJUSTE: O botão de Iniciar/Continuar só aparece se o status NÃO for 'em_pausa' */}
+                {cargoUsuario !== 'Supervisor' && pesquisa.status !== 'em_pausa' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuAberto(false);
+                      navigate(`/responder/${pesquisa.id_pesquisa}`);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left font-medium transition-colors"
+                  >
+                    {pesquisa.status === 'concluida' ? (
+                      <Eye className="w-4 h-4 text-slate-500" />
+                    ) : (
+                      <Play className="w-4 h-4 text-slate-500" />
+                    )}
+                    <span>
+                      {pesquisa.status === 'concluida' ? 'Visualizar pesquisa' : 'Iniciar pesquisa'}
+                    </span>
+                  </button>
+                )}
 
-            {/* botão de Pausar / retomar*/}
-            {pesquisa.status !== 'concluida' && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setMenuAberto(false);
-                  onAlternarPausa(pesquisa.id_pesquisa, pesquisa.status); // Aciona o pai
-                }}
-                className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left font-medium transition-colors"
-              >
-                <Pause className="w-4 h-4 text-slate-500" />
-                <span>
-                  {pesquisa.status === 'em_pausa'
-                    ? 'Retomar pesquisa'
-                    : 'Pausar pesquisa'}
-                </span>
-              </button>
+                {cargoUsuario === 'Supervisor' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuAberto(false);
+                      alert("Modo Leitura: Exibindo modelo estático da pesquisa.");
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left font-medium transition-colors"
+                  >
+                    <Eye className="w-4 h-4 text-slate-500" />
+                    <span>Visualizar estrutura</span>
+                  </button>
+                )}
+
+                {cargoUsuario === 'Admin' && pesquisa.status !== 'concluida' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuAberto(false);
+                      onAlternarPausa(pesquisa.id_pesquisa, pesquisa.status);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left font-medium transition-colors"
+                  >
+                    {pesquisa.status === 'em_pausa' ? (
+                      <Play className="w-4 h-4 text-slate-500" />
+                    ) : (
+                      <Pause className="w-4 h-4 text-slate-500" />
+                    )}
+                    <span>
+                      {pesquisa.status === 'em_pausa'
+                        ? 'Retomar pesquisa'
+                        : 'Pausar pesquisa'}
+                    </span>
+                  </button>
+                )}
+
+                {(cargoUsuario === 'Admin' || cargoUsuario === 'Supervisor') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuAberto(false);
+                      alert(`Emitindo relatório de: ${pesquisa.titulo}`);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left font-medium transition-colors"
+                  >
+                    <FilePieChart size={16} className="text-indigo-500" />
+                    <span>Emitir relatório</span>
+                  </button>
+                )}
+              </>
             )}
 
-            {/* emitir relatório */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setMenuAberto(false);
-                alert(`Emitindo relatório de: ${pesquisa.titulo}`);
-              }}
-              className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left font-medium"
-            >
-              <FilePieChart size={16} className="text-indigo-500" />
-              Emitir relatório
-            </button>
-
-            <hr className="border-slate-100 my-1" />
-
-            {/*excluir pesquisa */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setMenuAberto(false);
-                if (
-                  window.confirm(
-                    `Tem certeza que deseja excluir a pesquisa "${pesquisa.titulo}"?`,
-                  )
-                ) {
-                  if (onExcluir) onExcluir(pesquisa.id_pesquisa);
-                }
-              }}
-              className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50 text-left font-semibold"
-            >
-              <Trash2 size={16} className="text-red-600 shrink-0" />
-              <span>Excluir pesquisa</span>
-            </button>
+            {cargoUsuario === 'Admin' && (
+              <>
+                <hr className="border-slate-100 my-1" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuAberto(false);
+                    if (
+                      window.confirm(
+                        `Tem certeza que deseja excluir a pesquisa "${pesquisa.titulo}"?`,
+                      )
+                    ) {
+                      if (onExcluir) onExcluir(pesquisa.id_pesquisa);
+                    }
+                  }}
+                  className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50 text-left font-semibold transition-colors"
+                >
+                  <Trash2 size={16} className="text-red-600 shrink-0" />
+                  <span>Excluir pesquisa</span>
+                </button>
+              </>
+            )}
           </div>,
           document.body,
         )}

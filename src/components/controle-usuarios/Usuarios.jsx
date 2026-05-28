@@ -1,4 +1,5 @@
 import React from "react";
+// importando ícones
 import { Pencil, Trash2 } from 'lucide-react';
 
 export default function Usuarios() {
@@ -10,7 +11,6 @@ export default function Usuarios() {
       email: "regisnogueira@example.com",
       cargo: "Admin",
       permissao: "Admin",
-      avatar: "https://i.pravatar.cc/150?img=1",
     },
     {
       id: 1,
@@ -18,7 +18,6 @@ export default function Usuarios() {
       email: "mateustaveira@example.com",
       cargo: "Supervisor",
       permissao: "Supervisor",
-      avatar: "https://i.pravatar.cc/150?img=1",
     }
   ];
 
@@ -26,6 +25,7 @@ export default function Usuarios() {
     <div className="overflow-x-auto px-4">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
+          {/* colunas */}
           <tr>
             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Nome
@@ -46,16 +46,10 @@ export default function Usuarios() {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {listaUsuarios.map((usuario) => (
+            // linhas
             <tr key={usuario.id}>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0 h-10 w-10">
-                    <img 
-                      className="h-10 w-10 rounded-full" 
-                      src={usuario.avatar} 
-                      alt={usuario.nome} 
-                    />
-                  </div>
                   <div className="ml-4">
                     <div className="text-sm font-medium text-gray-900">
                       {usuario.nome}

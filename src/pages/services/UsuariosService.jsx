@@ -7,7 +7,7 @@ const KEY_USUARIOS = 'usuarios';
 const KEY_LOGADO = 'usuarioLogado';
 
 export const usuarioService = {
-  // busca todos os usuários cadastrados ou devolve a lista padrão inicial
+  // busca todos os usuários cadastrados ou devolve a lista padrão inicial gravada
   buscarTodos: () => {
     try {
       const armazenados = localStorage.getItem(KEY_USUARIOS);
@@ -15,7 +15,6 @@ export const usuarioService = {
         return JSON.parse(armazenados);
       }
       
-      // lista padrão 
       const padroes = [
         {
           id: '1',
@@ -32,7 +31,6 @@ export const usuarioService = {
           cargo: 'Pesquisador',
         },
       ];
-      // salva os padrões no localStorage 
       localStorage.setItem(KEY_USUARIOS, JSON.stringify(padroes));
       return padroes;
     } catch (error) {
@@ -41,7 +39,12 @@ export const usuarioService = {
     }
   },
 
-  // procura um usuário pelo e-mail blindando contra espaços e letras maiúsculas
+  // salva a lista completa editada pelo Admin de volta no LocalStorage
+  atualizarListaCompleta: (novaLista) => {
+    localStorage.setItem(KEY_USUARIOS, JSON.stringify(novaLista));
+  },
+
+  // procura um usuário pelo e-mail
   buscarPorEmail: (email) => {
     if (!email) return null;
     const usuarios = usuarioService.buscarTodos();
@@ -50,7 +53,7 @@ export const usuarioService = {
     );
   },
 
-  // cadastra automaticamente um novo pesquisador no primeiro acesso via login
+  // cadastra automaticamente um novo Pesquisador no primeiro acesso via login
   cadastrarPesquisadorAuto: (email, senhaDefinida) => {
     const usuarios = usuarioService.buscarTodos();
     
@@ -61,7 +64,7 @@ export const usuarioService = {
       id: Date.now().toString(),
       nome: `${nomeFormatado}`,
       email: email.trim().toLowerCase(),
-      senha: senhaDefinida || '12345678', // Usa a senha digitada ou uma padrão
+      senha: senhaDefinida || '12345678',
       cargo: 'Pesquisador'
     };
 

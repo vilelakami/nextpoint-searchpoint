@@ -1,64 +1,49 @@
-/**
- * SERVIÇO CENTRALIZADO DE PESQUISAS (ResearchPoint)
- * Gerencia toda a persistência, busca, alteração e deleção no LocalStorage.
- */
-
 const KEY_PESQUISAS = 'pesquisas';
 
 export const pesquisaService = {
-  // busca todas as pesquisas salvas no sistema
   buscarTodas: () => {
     try {
       return JSON.parse(localStorage.getItem(KEY_PESQUISAS)) || [];
     } catch (error) {
-      console.error('Erro ao ler pesquisas do localStorage', error);
+      console.error("Erro ao ler pesquisas", error);
       return [];
     }
   },
 
-  // busca uma única pesquisa pelo ID dela
   buscarPorId: (id) => {
     const pesquisas = pesquisaService.buscarTodas();
     return pesquisas.find((p) => p.id_pesquisa === id) || null;
   },
 
-  // usado na tela "ResponderFormulario": atualiza o status e as respostas dadas
   salvarProgresso: (id, novoStatus, respostasAtuais) => {
     const pesquisas = pesquisaService.buscarTodas();
-
     const listaAtualizada = pesquisas.map((p) => {
       if (p.id_pesquisa === id) {
-        return {
-          ...p,
-          status: novoStatus,
-          respostasSalvas: respostasAtuais,
-        };
+        return { ...p, status: novoStatus, respostasSalvas: respostasAtuais };
       }
       return p;
     });
-
     localStorage.setItem(KEY_PESQUISAS, JSON.stringify(listaAtualizada));
     return true;
   },
 
-  // usado na tela "Formulario": salva/atualiza a estrutura (o modelo) criado ou editado
-  salvarFormularioCompleto: (dadosFormulario) => {
+  salvarEstruturaFormulario: (dadosFormulario, determinarStatus) => {
     const pesquisas = pesquisaService.buscarTodas();
     const idFinal = dadosFormulario.id_pesquisa || Date.now().toString();
+    
+    const statusFinal = determinarStatus === 'pronta' ? 'em_andamento' : determinarStatus;
 
     const novoForms = {
       ...dadosFormulario,
       id_pesquisa: idFinal,
-      status: 'rascunho',
+      status: statusFinal, 
     };
 
-    const existe = pesquisas.some((p) => p.id_pesquisa === idFinal);
+    const existe = pesquisas.some(p => p.id_pesquisa === idFinal);
     let listaAtualizada;
 
     if (existe) {
-      listaAtualizada = pesquisas.map((p) =>
-        p.id_pesquisa === idFinal ? novoForms : p,
-      );
+      listaAtualizada = pesquisas.map(p => p.id_pesquisa === idFinal ? novoForms : p);
     } else {
       listaAtualizada = [...pesquisas, novoForms];
     }
@@ -67,64 +52,52 @@ export const pesquisaService = {
     return true;
   },
 
-  // usado na tela "Dashboard": Alterna entre Pausado (em_pausa) e Ativo (rascunho)
   alternarPausa: (idPesquisa, statusAtual) => {
     const pesquisas = pesquisaService.buscarTodas();
-    const novoStatus = statusAtual === 'em_pausa' ? 'rascunho' : 'em_pausa';
+    const novoStatus = statusAtual === 'em_pausa' ? 'em_andamento' : 'em_pausa';
 
-    const listaAtualizada = pesquisas.map((p) => {
-      if (p.id_pesquisa === idPesquisa) {
-        return { ...p, status: novoStatus };
+    const listaAtualizada = pesquisas.map((pesquisa) => {
+      if (pesquisa.id_pesquisa === idPesquisa) {
+        return {
+          ...pesquisa,
+          status: novoStatus
+        };
       }
-      return p;
+      return pesquisa;
     });
 
     localStorage.setItem(KEY_PESQUISAS, JSON.stringify(listaAtualizada));
     return listaAtualizada;
   },
 
-  // usado na tela "Dashboard": exclui permanentemente uma pesquisa
   excluir: (idPesquisa) => {
     const pesquisas = pesquisaService.buscarTodas();
     const listaFiltrada = pesquisas.filter((p) => p.id_pesquisa !== idPesquisa);
-
     localStorage.setItem(KEY_PESQUISAS, JSON.stringify(listaFiltrada));
-    return listaFiltrada;
+    return listaFiltrada; 
   },
 
-  // usado na barra de buscas do "Dashboard": filtra por texto (Título/Registro) e Aba de Status
   filtrarPesquisas: (lista, busca, filtroStatus) => {
     const termoBusca = busca.toLowerCase().trim();
-
     return lista.filter((pesquisa) => {
       const titulo = (pesquisa.titulo || '').toLowerCase();
       const registro = String(pesquisa.id_pesquisa || '').toLowerCase();
-
-      const bateTexto =
-        titulo.includes(termoBusca) || registro.includes(termoBusca);
+      const bateTexto = titulo.includes(termoBusca) || registro.includes(termoBusca);
 
       let bateStatus = false;
       if (filtroStatus === 'todas') {
         bateStatus = true;
-      } else if (filtroStatus === 'em_andamento') {
-        bateStatus = pesquisa.status === 'ativa';
       } else {
         bateStatus = pesquisa.status === filtroStatus;
       }
-
       return bateTexto && bateStatus;
     });
   },
 
-  // usado para iniciar o estado de um formulário novo
   gerarFormularioVazio: () => ({
     id_pesquisa: '',
     titulo: '',
     descricao: '',
-    nome_entrevistado: '',
-    idade_entrevistado: '',
-    sexo_entrevistado: '',
-    escolaridade_entrevistado: '',
     status: 'rascunho',
     perguntas: [
       {
@@ -139,4 +112,70 @@ export const pesquisaService = {
       },
     ],
   }),
+
+  criarNovaPerguntaEstrutura: () => ({
+    id: Date.now().toString(),
+    tipo_bloco: 'pergunta',
+    titulo: '',
+    descricao: '',
+    tipo: 'multipla_escolha',
+    obrigatoria: false,
+    opcoes: [''],
+  }),
+
+  criarNovoTituloEstrutura: () => ({
+    id: Date.now().toString(),
+    tipo_bloco: 'titulo_bloco',
+    titulo: 'Novo Título'
+  }),
+
+  verificarPermissao: (usuario, acao) => {
+    if (!usuario) return false;
+    if (usuario.cargo === 'Admin') return true;
+    const permissoes = {
+      pausar: ['Admin'],
+      excluir: ['Admin'],
+      configuracao: ['Admin'],
+      criar: ['Admin']
+    };
+    return permissoes[acao]?.includes(usuario.cargo);
+  },
+
+  executarAlternarPausa: (id, statusAtual) => {
+    return pesquisaService.alternarPausa(id, statusAtual);
+  },
+
+  executarExclusao: (id) => {
+    return pesquisaService.excluir(id);
+  },
+
+  validarPerguntasObrigatorias: (perguntas, respostas) => {
+    return perguntas.filter(p => {
+      if (p.tipo_bloco && p.tipo_bloco !== 'pergunta') return false;
+      if (!p.obrigatoria) return false;
+      const resp = respostas[p.id];
+      return !resp || (Array.isArray(resp) && resp.length === 0) || String(resp).trim() === '';
+    });
+  },
+
+  salvarColetaRespostas: (idPesquisa, tituloPesquisa, respostas, statusFinal) => {
+    const todasPesquisas = pesquisaService.buscarTodas();
+    const pesquisasAtualizadas = todasPesquisas.map(p => 
+      p.id_pesquisa === idPesquisa ? { ...p, status: statusFinal } : p
+    );
+    localStorage.setItem(KEY_PESQUISAS, JSON.stringify(pesquisasAtualizadas));
+
+    const historicoRespostas = JSON.parse(localStorage.getItem('respostas_pesquisas') || '[]');
+    const novaFicha = {
+      id_coleta: Date.now().toString(),
+      id_pesquisa: idPesquisa,
+      titulo_pesquisa: tituloPesquisa,
+      data: new Date().toLocaleDateString('pt-BR'),
+      respostas: respostas
+    };
+    historicoRespostas.push(novaFicha);
+    localStorage.setItem('respostas_pesquisas', JSON.stringify(historicoRespostas));
+
+    return true;
+  }
 };

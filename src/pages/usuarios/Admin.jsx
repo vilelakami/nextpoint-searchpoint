@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// impotração dos ícones
+// importação dos ícones
 import { ArrowLeft, UserPlus, Trash2, Pencil } from 'lucide-react';
 // importação das páginas
 import SearchBar from '../../components/searchbar/SearchBar';
@@ -9,28 +9,40 @@ import ModalUsuario from '../usuarios/ModalNovoUsuario';
 export default function Admin() {
   const navigate = useNavigate();
 
-  // array com os usuários (exemplos)
-  const [listaUsuarios, setListaUsuarios] = useState([
-    {
-      id: '1',
-      nome: 'Regis Nogueira',
-      email: 'regisnogueira@example.com',
-      cargo: 'Admin',
-    },
-    {
-      id: '2',
-      nome: 'Matheus Taveira',
-      email: 'mateustaveira@example.com',
-      cargo: 'Pesquisador',
-    }
-  ]);
+  // o estado inicia puxando os dados salvos no LocalStorage para não sumir ao dar F5
+  const [listaUsuarios, setListaUsuarios] = useState(() => {
+    const salvos = localStorage.getItem('usuarios');
+    return salvos ? JSON.parse(salvos) : [
+      {
+        id: '1',
+        nome: 'Regis Nogueira',
+        email: 'regis@example.com',
+        cargo: 'Admin',
+        senha: 'admin'
+      },
+      {
+        id: '2',
+        nome: 'Matheus Taveira',
+        email: 'matheus@example.com',
+        cargo: 'Pesquisador',
+        senha: 'senha'
+      }
+    ];
+  });
 
-  // estadsos de controle > abrir modal > add novo usuario > editar usuario
+  const [busca, setBusca] = useState('');
+
+  // Sincroniza e grava no LocalStorage automaticamente sempre que a lista mudar
+  useEffect(() => {
+    localStorage.setItem('usuarios', JSON.stringify(listaUsuarios));
+  }, [listaUsuarios]);
+
+  // estados de controle do modal
   const [modalAberto, setModalAberto] = useState(false);
-  const [novoUsuario, setNovoUsuario] = useState({ nome: '', email: '', cargo: 'Pesquisador' });
+  const [novoUsuario, setNovoUsuario] = useState({ nome: '', email: '', senha: '', cargo: 'Pesquisador' });
   const [idEditando, setIdEditando] = useState(null);
 
-  // lógica de salvar/editar usuário
+  // lógica de salvar/editar usuário salvando de forma persistente
   const handleSalvarUsuario = (e) => {
     e.preventDefault();
     if (!novoUsuario.nome || !novoUsuario.email) return;
@@ -48,7 +60,7 @@ export default function Admin() {
       setListaUsuarios([...listaUsuarios, usuarioCriado]);
     }
 
-    setNovoUsuario({ nome: '', email: '', cargo: 'Pesquisador' });
+    setNovoUsuario({ nome: '', email: '', senha: '', cargo: 'Pesquisador' });
     setModalAberto(false);
   };
 
@@ -64,9 +76,15 @@ export default function Admin() {
 
   const handleIniciarEdicao = (usuario) => {
     setIdEditando(usuario.id);
-    setNovoUsuario({ nome: usuario.nome, email: usuario.email, cargo: usuario.cargo });
+    setNovoUsuario({ nome: usuario.nome, email: usuario.email, senha: usuario.senha || '', cargo: usuario.cargo });
     setModalAberto(true);
   };
+
+  // Filtragem dinâmica do seu SearchBar original
+  const usuariosFiltrados = listaUsuarios.filter(user => 
+    user.nome.toLowerCase().includes(busca.toLowerCase()) || 
+    user.email.toLowerCase().includes(busca.toLowerCase())
+  );
 
   return (
     <div className="flex flex-col w-full mx-auto h-screen font-montserrat bg-slate-50/50 relative">
@@ -91,29 +109,28 @@ export default function Admin() {
       {/* exibe a qntde de users cadastrados */}
       <div className='flex items-center justify-between px-6 py-2'>
         <h1 className='font-semibold text-indigo-700 hover:text-indigo-950 text-base md:text-lg'>
-          Usuários ({listaUsuarios.length})
+          Usuários ({usuariosFiltrados.length})
         </h1>
-        {/* btn de add pesquisador */}
         <button 
           onClick={() => {
             setIdEditando(null);
-            setNovoUsuario({ nome: '', email: '', cargo: 'Pesquisador' });
+            setNovoUsuario({ nome: '', email: '', senha: '', cargo: 'Pesquisador' });
             setModalAberto(true);
           }}
           className='flex items-center gap-1 text-indigo-700 font-semibold hover:text-indigo-950 cursor-pointer text-sm bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors'
         >
           <UserPlus className='size-4'/>
-          Adicionar Pesquisador
+          Adicionar Novo Usuário
         </button>
       </div>
 
       {/* Barra de Busca e Listagem em Tabela */}
       <div className="px-6 flex-grow flex flex-col">
         <div className='flex justify-center w-full mb-4 mt-2'>
-          <SearchBar />
+          <SearchBar busca={busca} setBusca={setBusca} />
         </div>
         
-        {/* Tabela de Usuários Customizada */}
+        {/* Tabela de Usuários */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto flex-grow mb-6">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -126,12 +143,13 @@ export default function Admin() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
-              {listaUsuarios.map((user) => (
+              {usuariosFiltrados.map((user) => (
                 <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
                   <td className="py-4 px-4 font-medium text-slate-900">{user.nome}</td>
                   <td className="py-4 px-4">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                      user.cargo === 'Admin' ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-100 text-slate-600'
+                      user.cargo === 'Admin' ? 'bg-indigo-50 text-indigo-700' : 
+                      user.cargo === 'Supervisor' ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600'
                     }`}>
                       {user.cargo}
                     </span>
@@ -143,24 +161,22 @@ export default function Admin() {
                       className="bg-white border border-slate-200 rounded-lg text-xs font-medium px-2 py-1 outline-none focus:border-indigo-500 cursor-pointer text-slate-700"
                     >
                       <option value="Admin">Admin</option>
+                      <option value="Supervisor">Supervisor</option>
                       <option value="Pesquisador">Pesquisador</option>
                     </select>
                   </td>
                   <td className="py-4 px-4 text-slate-500">{user.email}</td>
                   <td className="py-4 px-4">
                     <div className="flex items-center justify-center gap-3">
-                      {/* ações editar e excluir usuario */}
                       <button 
                         onClick={() => handleIniciarEdicao(user)}
                         className="text-slate-400 hover:text-indigo-600 p-1 rounded transition-colors"
-                        title="Editar dados"
                       >
                         <Pencil className="size-4" />
                       </button>
                       <button 
                         onClick={() => handleExcluirUsuario(user.id)}
                         className="text-slate-400 hover:text-red-600 p-1 rounded transition-colors"
-                        title="Excluir usuário"
                       >
                         <Trash2 className="size-4" />
                       </button>
@@ -171,7 +187,7 @@ export default function Admin() {
             </tbody>
           </table>
 
-          {listaUsuarios.length === 0 && (
+          {usuariosFiltrados.length === 0 && (
             <div className="text-center py-12 text-slate-400 font-medium">
               Nenhum usuário cadastrado na plataforma.
             </div>
@@ -179,7 +195,6 @@ export default function Admin() {
         </div>
       </div>
 
-      {/* passando funções via props pro modal */}
       <ModalUsuario 
         modalAberto={modalAberto}
         setModalAberto={setModalAberto}
